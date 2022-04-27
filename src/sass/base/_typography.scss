@@ -1,6 +1,9 @@
 @import '../abstracts/functions';
 @import '../abstracts/variables';
 @import '../abstracts/mixins';
+
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
 /* 
 @font-face {
   font-family: 'Arial';
@@ -31,4 +34,16 @@
   font-family: 'Georgia', 'Times New Roman', Times, serif;
   font-style: normal;
   font-weight: 400;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f5f6;
+  font-size: 1.6rem;
+  color: #666666;
+}
+
+.keyboard__key {
+  font-size: 1.6rem;
+  font-weight: bold;
 }
