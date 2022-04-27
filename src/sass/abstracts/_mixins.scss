@@ -1,0 +1,13 @@
+@mixin flex($align: flex-start, $justify: flex-start) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+}
+
+@mixin media-desktop {
+  @media (max-width: $desktop-width) { @content; }
+}
+
+@mixin media-tablet {
+  @media (max-width: $tablet-width) { @content; }
+}
