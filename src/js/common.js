@@ -1,4 +1,4 @@
-export default [
+export const rowsMap = [
   [
     'Backquote',
     'Digit1',
@@ -20,3 +20,14 @@ export default [
   ['ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'ShiftRight'],
   ['ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight'],
 ];
+
+export const createDomNode = (element, attributes, ...classes) => {
+  const node = document.createElement(element);
+  node.classList.add(...classes);
+  if (attributes) {
+    Object.keys(attributes).forEach(key => {
+      node.setAttribute(key, attributes[key]);
+    });
+  }
+  return node;
+};

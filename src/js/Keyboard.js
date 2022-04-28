@@ -1,8 +1,12 @@
 /* eslint-disable class-methods-use-this */
-export default class {
+import { createDomNode } from './common';
+import Key from './Key';
+
+export default class Keyboard {
   constructor(rowsMap, langs) {
     this.langs = langs;
     this.rowsMap = rowsMap;
+    this.keys = {};
     this.checkInitParams();
   }
 
@@ -14,16 +18,28 @@ export default class {
   }
 
   init(lang = 'en') {
-    const keyboardWrapper = this.createDomNode('div', '', 'keyboard__wrapper');
+    const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
+    Object.keys(this.langs).forEach(l => {
+      this.langKeys(l, this.langs[l]);
+    });
     this.rowsMap.forEach(row => {
-      const keyboardRow = this.createDomNode('div', '', 'keyboard__row');
+      const keyboardRow = createDomNode('div', '', 'keyboard__row');
+      let currentHalfContainer;
       row.forEach(code => {
-        const btn = this.createDomNode('button', { 'data-code': code }, 'keyboard__key');
-        const keyObj = this.langs[lang].find(el => el.code === code);
-        if (keyObj) {
-          btn.innerText = keyObj.key;
+        const keyObj = this.keys[lang].find(el => el.code === code);
+        const btn = keyObj.render();
+        if (keyObj.classes.includes('keyboard__key-half')) {
+          if (!currentHalfContainer) {
+            currentHalfContainer = createDomNode('div', '', 'keyboard__key-half-container');
+          }
+          currentHalfContainer.append(btn);
+          if (currentHalfContainer.children.length === 2) {
+            keyboardRow.append(currentHalfContainer);
+            currentHalfContainer = null;
+          }
+        } else {
+          keyboardRow.append(btn);
         }
-        keyboardRow.append(btn);
       });
       keyboardWrapper.append(keyboardRow);
     });
@@ -31,14 +47,7 @@ export default class {
     document.body.append(keyboardWrapper);
   }
 
-  createDomNode(element, attributes, ...classes) {
-    const node = document.createElement(element);
-    node.classList.add(...classes);
-    if (attributes) {
-      Object.keys(attributes).forEach(key => {
-        node.setAttribute(key, attributes[key]);
-      });
-    }
-    return node;
+  langKeys(lang, keys) {
+    this.keys[lang] = keys.map(key => new Key(key));
   }
 }

@@ -22,6 +22,7 @@
   border: 2px outset #767676;
   border-radius: 5px;
   background: $color-gray-light;
+  font-weight: 700;
 
   &:active,
   &.active {
@@ -63,4 +64,20 @@
   margin: 0;
   padding: 2.5px;
   vertical-align: middle;
+}
+
+.keyboard__key-double {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+
+  .second {
+    font-size: 1.3rem;
+    font-weight: 400;
+  }
+}
+
+.keyboard__key-double > span {
+  display: block;
 }
