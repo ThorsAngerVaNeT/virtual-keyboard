@@ -1,3 +1,4 @@
+@import '../abstracts/mixins';
 * {
   box-sizing: border-box;
   margin: 0;
@@ -8,4 +9,10 @@
 
 html {
   font-size: $doc-font-size;
+}
+
+body {
+  height: 100vh;
+  @include flex(center);
+  flex-direction: column;
 }

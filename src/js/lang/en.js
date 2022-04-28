@@ -253,6 +253,7 @@ export default [
     code: 'CapsLock',
     key: 'CapsLock',
     shift: null,
+    classes: ['toggle'],
   },
   {
     code: 'ContextMenu',
@@ -301,18 +302,18 @@ export default [
     key: 'Tab',
     shift: null,
   },
-  { code: 'ArrowLeft', key: '←', shift: null },
+  { code: 'ArrowLeft', key: '←', shift: null, classes: ['arrow'] },
   {
     code: 'ArrowUp',
     key: '↑',
     shift: null,
-    classes: ['half'],
+    classes: ['half', 'arrow'],
   },
   {
     code: 'ArrowDown',
     key: '↓',
     shift: null,
-    classes: ['half'],
+    classes: ['half', 'arrow'],
   },
-  { code: 'ArrowRight', key: '→', shift: null },
+  { code: 'ArrowRight', key: '→', shift: null, classes: ['arrow'] },
 ];
