@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable class-methods-use-this */
 import { createDomNode } from './common';
 import Key from './Key';
 
@@ -8,6 +7,7 @@ export default class Keyboard {
     this.langs = langs;
     this.rowsMap = rowsMap;
     this.keys = {};
+    this.state = { alt: false, caps: false, ctrl: false, shift: false };
     this.checkInitParams();
   }
 
@@ -24,12 +24,19 @@ export default class Keyboard {
     this.keyboardInput.onkeydown = e => {
       e.preventDefault();
       const keyObj = this.keys[this.currentLang].find(key => key.code === e.code);
+      if (keyObj.type === 'fn' && e.repeat) return;
       if (keyObj) {
         const { btn } = keyObj;
         if (btn.classList.contains('keyboard__key-toggle') && btn.classList.contains('active')) btn.classList.remove('active');
         else btn.classList.add('active');
-        if (e.code === 'ShiftRight' || e.code === 'ShiftLeft') {
-          this.switchCase(true, e);
+        if (keyObj.code === 'ShiftRight' || keyObj.code === 'ShiftLeft') {
+          this.state.shift = true;
+          this.switchCase();
+          this.switchDouble();
+        }
+        if (keyObj.code === 'CapsLock') {
+          this.state.caps = !this.state.caps;
+          this.switchCase();
         }
       }
     };
@@ -38,11 +45,14 @@ export default class Keyboard {
       e.preventDefault();
       const keyObj = this.keys[this.currentLang].find(key => key.code === e.code);
       if (keyObj) {
-        if (e.code === 'ShiftRight' || e.code === 'ShiftLeft') {
-          this.switchCase(false, e);
+        const { btn, code, key, shift, type } = this.keys[this.currentLang].find(k => k.code === e.code);
+        if (code === 'ShiftRight' || code === 'ShiftLeft') {
+          this.state.shift = false;
+          this.switchCase();
+          this.switchDouble();
         }
-        const { btn, key, type } = this.keys[this.currentLang].find(key => key.code === e.code);
-        if (type !== 'fn') this.keyboardInput.value += key;
+        if (type === 'key') this.keyboardInput.value += this.state.shift !== this.state.caps ? shift : key;
+        if (type === 'double') this.keyboardInput.value += this.state.shift ? shift : key;
         if (!btn.classList.contains('keyboard__key-toggle')) btn.classList.remove('active');
       }
     };
@@ -79,14 +89,20 @@ export default class Keyboard {
     this.keys[lang] = keys.map(key => new Key(key));
   }
 
-  switchCase(state, e) {
+  switchCase() {
     this.keys[this.currentLang]
-      .filter(key => key.type !== 'fn')
+      .filter(key => key.type === 'key')
       .forEach(key => {
-        if (key.type === 'double') {
-          key.btn.children[0].innerText = key[state ? 'shift' : 'key'];
-          key.btn.children[1].innerText = key[state ? 'key' : 'shift'];
-        } else key.btn.innerText = key[state ? 'shift' : 'key'];
+        key.btn.innerText = key[this.state.shift !== this.state.caps ? 'shift' : 'key'];
+      });
+  }
+
+  switchDouble() {
+    this.keys[this.currentLang]
+      .filter(key => key.type === 'double')
+      .forEach(key => {
+        key.btn.children[0].innerText = key[this.state.shift ? 'shift' : 'key'];
+        key.btn.children[1].innerText = key[this.state.shift ? 'key' : 'shift'];
       });
   }
 }

@@ -14,6 +14,7 @@ export default class Key {
   init() {
     switch (this.shift) {
       case '':
+      case ' ':
         this.shift = this.key.toUpperCase();
         this.type = 'key';
         break;
