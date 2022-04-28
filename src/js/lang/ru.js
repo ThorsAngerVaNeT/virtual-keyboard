@@ -271,9 +271,9 @@ export default [
   },
   {
     code: 'Enter',
-    class: 'blue',
     key: 'Enter',
     shift: null,
+    classes: ['blue'],
   },
   {
     code: 'MetaLeft',
@@ -292,17 +292,27 @@ export default [
   },
   {
     code: 'Space',
-    class: 'blue',
     key: ' ',
     shift: ' ',
+    classes: ['blue'],
   },
   {
     code: 'Tab',
     key: 'Tab',
-    shift: '',
+    shift: null,
   },
   { code: 'ArrowLeft', key: '←', shift: null },
-  { code: 'ArrowUp', key: '↑', shift: null },
-  { code: 'ArrowDown', key: '↓', shift: null },
+  {
+    code: 'ArrowUp',
+    key: '↑',
+    shift: null,
+    classes: ['half'],
+  },
+  {
+    code: 'ArrowDown',
+    key: '↓',
+    shift: null,
+    classes: ['half'],
+  },
   { code: 'ArrowRight', key: '→', shift: null },
 ];
