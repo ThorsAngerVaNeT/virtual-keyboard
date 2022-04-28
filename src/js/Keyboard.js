@@ -20,22 +20,31 @@ export default class Keyboard {
 
   init(lang = 'en') {
     this.currentLang = lang;
-    const keyboardInput = createDomNode('textarea', { rows: 20, cols: 100 }, 'keyboard__input');
-    keyboardInput.onkeydown = e => {
-      const { btn } = this.keys[this.currentLang].find(key => key.code === e.code);
-      if (btn.classList.contains('keyboard__key-toggle') && btn.classList.contains('active')) btn.classList.remove('active');
-      else btn.classList.add('active');
-      if (e.code === 'ShiftRight' || e.code === 'ShiftLeft') {
-        this.switchCase(true, e);
+    this.keyboardInput = createDomNode('textarea', { rows: 20, cols: 100 }, 'keyboard__input');
+    this.keyboardInput.onkeydown = e => {
+      e.preventDefault();
+      const keyObj = this.keys[this.currentLang].find(key => key.code === e.code);
+      if (keyObj) {
+        const { btn } = keyObj;
+        if (btn.classList.contains('keyboard__key-toggle') && btn.classList.contains('active')) btn.classList.remove('active');
+        else btn.classList.add('active');
+        if (e.code === 'ShiftRight' || e.code === 'ShiftLeft') {
+          this.switchCase(true, e);
+        }
       }
     };
-    
-    keyboardInput.onkeyup = e => {
-      if (e.code === 'ShiftRight' || e.code === 'ShiftLeft') {
-        this.switchCase(false, e);
+
+    this.keyboardInput.onkeyup = e => {
+      e.preventDefault();
+      const keyObj = this.keys[this.currentLang].find(key => key.code === e.code);
+      if (keyObj) {
+        if (e.code === 'ShiftRight' || e.code === 'ShiftLeft') {
+          this.switchCase(false, e);
+        }
+        const { btn, key, type } = this.keys[this.currentLang].find(key => key.code === e.code);
+        if (type !== 'fn') this.keyboardInput.value += key;
+        if (!btn.classList.contains('keyboard__key-toggle')) btn.classList.remove('active');
       }
-      const { btn } = this.keys[this.currentLang].find(key => key.code === e.code);
-      if (!btn.classList.contains('keyboard__key-toggle')) btn.classList.remove('active');
     };
 
     const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
@@ -63,7 +72,7 @@ export default class Keyboard {
       keyboardWrapper.append(keyboardRow);
     });
     document.body.innerHTML = '';
-    document.body.append(keyboardInput, keyboardWrapper);
+    document.body.append(this.keyboardInput, keyboardWrapper);
   }
 
   langKeys(lang, keys) {
