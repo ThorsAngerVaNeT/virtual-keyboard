@@ -6,6 +6,7 @@
   padding: 10px;
   // height: 300px;
   position: absolute;
+  bottom: 50px;
   background: $color-gray;
   border-radius: 1rem;
 }
@@ -39,7 +40,7 @@
   text-align: left;
 }
 
-.keyboard__key-fn:last-of-type,
+.keyboard__key-fn:last-of-type:not(.keyboard__key-arrow),
 .keyboard__key-blue:last-of-type {
   text-align: right;
 }
@@ -80,4 +81,12 @@
 
 .keyboard__key-double > span {
   display: block;
+}
+
+.keyboard__input {
+  padding: 2rem;
+  margin-top: 10rem;
+  border: 2px solid $color-gray-dark;
+  border-radius: 10px;
+  resize: none;
 }
