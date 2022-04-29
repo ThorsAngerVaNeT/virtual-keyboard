@@ -21,49 +21,17 @@ export default class Keyboard {
     this.currentLang = lang;
     this.keyboardInput = createDomNode(
       'textarea',
-      { rows: 20, cols: 100, placeholder: 'Click Here to activate keyboard!' },
+      { rows: 15, cols: 100, placeholder: 'Click Here to activate keyboard!' },
       'keyboard__input'
     );
 
-    this.keyboardInput.onkeydown = e => {
-      e.preventDefault();
-      const keyObj = this.keys[this.currentLang].find(key => key.code === e.code);
-      if (keyObj.type === 'fn' && e.repeat) return;
-      if (keyObj) {
-        const { btn } = keyObj;
-        if (btn.classList.contains('keyboard__key-toggle') && btn.classList.contains('active')) btn.classList.remove('active');
-        else btn.classList.add('active');
-        if (keyObj.code === 'ShiftRight' || keyObj.code === 'ShiftLeft') {
-          this.state.shift = true;
-          this.switchCase();
-          this.switchDouble();
-        }
-        if (keyObj.code === 'CapsLock') {
-          this.state.caps = !this.state.caps;
-          this.switchCase();
-        }
-      }
-    };
+    this.keyboardInput.onkeydown = e => this.eventListener(e);
 
-    this.keyboardInput.onkeyup = e => {
-      e.preventDefault();
-      const keyObj = this.keys[this.currentLang].find(key => key.code === e.code);
-      if (keyObj) {
-        const { btn, code, key, shift, type } = this.keys[this.currentLang].find(k => k.code === e.code);
-        if (code === 'ShiftRight' || code === 'ShiftLeft') {
-          this.state.shift = false;
-          this.switchCase();
-          this.switchDouble();
-        }
-        if (type === 'key') this.keyboardInput.value += this.state.shift !== this.state.caps ? shift : key;
-        if (type === 'double') this.keyboardInput.value += this.state.shift ? shift : key;
-        if (!btn.classList.contains('keyboard__key-toggle')) btn.classList.remove('active');
-      }
-    };
+    this.keyboardInput.onkeyup = e => this.eventListener(e);
 
     const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
     Object.keys(this.langs).forEach(l => {
-      this.langKeys(l, this.langs[l]);
+      this.createLangKeys(l, this.langs[l]);
     });
     this.rowsMap.forEach(row => {
       const keyboardRow = createDomNode('div', '', 'keyboard__row');
@@ -89,8 +57,57 @@ export default class Keyboard {
     document.body.append(this.keyboardInput, keyboardWrapper);
   }
 
-  langKeys(lang, keys) {
-    this.keys[lang] = keys.map(key => new Key(key));
+  eventListener(e) {
+    e.preventDefault();
+    const keyObj = this.keys[this.currentLang].find(key => key.code === (e.code || e.target.getAttribute('data-code')));
+    if (keyObj) {
+      const { btn, code, key, shift, type } = keyObj;
+      if (type === 'fn' && e.repeat) return;
+      if (e.type === 'keydown' || e.target.classList.contains('keyboard__key')) {
+        if (btn.classList.contains('keyboard__key-toggle') && btn.classList.contains('active')) btn.classList.remove('active');
+        else btn.classList.add('active');
+        if (code === 'CapsLock') {
+          this.state.caps = !this.state.caps;
+          this.switchCase();
+        }
+      }
+      if (code === 'ShiftRight' || code === 'ShiftLeft') {
+        this.state.shift = e.type === 'keydown';
+        this.switchCase();
+        this.switchDouble();
+      }
+      if (e.type === 'keyup' || e.target.classList.contains('keyboard__key')) {
+        if (type === 'fn')
+          switch (code) {
+            case 'Tab':
+              this.keyboardInput.value += '\t';
+              break;
+
+            case 'Enter':
+              this.keyboardInput.value += '\n';
+              break;
+
+            case 'Backspace':
+              this.keyboardInput.value += '\n';
+              break;
+
+            default:
+              break;
+          }
+          if (type === 'key') this.keyboardInput.value += this.state.shift !== this.state.caps ? shift : key;
+          if (type === 'double') this.keyboardInput.value += this.state.shift ? shift : key;
+          if (!btn.classList.contains('keyboard__key-toggle')) btn.classList.remove('active');
+        }
+        if (document.activeElement !== this.keyboardInput) this.keyboardInput.focus();
+    }
+  }
+
+  createLangKeys(lang, keys) {
+    this.keys[lang] = keys.map(key => {
+      const keyObj = new Key(key);
+      keyObj.btn.onclick = e => this.eventListener(e);
+      return keyObj;
+    });
   }
 
   switchCase() {
