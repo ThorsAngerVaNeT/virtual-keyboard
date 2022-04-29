@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import { createDomNode } from './common';
 import Key from './Key';
 
@@ -20,7 +19,12 @@ export default class Keyboard {
 
   init(lang = 'en') {
     this.currentLang = lang;
-    this.keyboardInput = createDomNode('textarea', { rows: 20, cols: 100 }, 'keyboard__input');
+    this.keyboardInput = createDomNode(
+      'textarea',
+      { rows: 20, cols: 100, placeholder: 'Click Here to activate keyboard!' },
+      'keyboard__input'
+    );
+
     this.keyboardInput.onkeydown = e => {
       e.preventDefault();
       const keyObj = this.keys[this.currentLang].find(key => key.code === e.code);
@@ -90,19 +94,17 @@ export default class Keyboard {
   }
 
   switchCase() {
-    this.keys[this.currentLang]
-      .filter(key => key.type === 'key')
-      .forEach(key => {
-        key.btn.innerText = key[this.state.shift !== this.state.caps ? 'shift' : 'key'];
-      });
+    const keys = this.keys[this.currentLang].filter(key => key.type === 'key');
+    keys.forEach((key, i) => {
+      keys[i].btn.innerText = key[this.state.shift !== this.state.caps ? 'shift' : 'key'];
+    });
   }
 
   switchDouble() {
-    this.keys[this.currentLang]
-      .filter(key => key.type === 'double')
-      .forEach(key => {
-        key.btn.children[0].innerText = key[this.state.shift ? 'shift' : 'key'];
-        key.btn.children[1].innerText = key[this.state.shift ? 'key' : 'shift'];
-      });
+    const doubles = this.keys[this.currentLang].filter(key => key.type === 'double');
+    doubles.forEach((key, i) => {
+      doubles[i].btn.children[0].innerText = key[this.state.shift ? 'shift' : 'key'];
+      doubles[i].btn.children[1].innerText = key[this.state.shift ? 'key' : 'shift'];
+    });
   }
 }
