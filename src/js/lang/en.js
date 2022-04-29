@@ -262,12 +262,12 @@ export default [
   },
   {
     code: 'ControlLeft',
-    key: 'Control',
+    key: 'Ctrl',
     shift: null,
   },
   {
     code: 'ControlRight',
-    key: 'Control',
+    key: 'Ctrl',
     shift: null,
   },
   {
