@@ -25,7 +25,7 @@ export const createDomNode = (element, attributes, ...classes) => {
   const node = document.createElement(element);
   node.classList.add(...classes);
   if (attributes) {
-    Object.keys(attributes).forEach(key => {
+    Object.keys(attributes).forEach((key) => {
       node.setAttribute(key, attributes[key]);
     });
   }

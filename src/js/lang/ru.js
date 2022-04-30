@@ -302,7 +302,9 @@ export default [
     key: 'Tab',
     shift: null,
   },
-  { code: 'ArrowLeft', key: '←', shift: null, classes: ['arrow'] },
+  {
+    code: 'ArrowLeft', key: '←', shift: null, classes: ['arrow'],
+  },
   {
     code: 'ArrowUp',
     key: '↑',
@@ -315,5 +317,7 @@ export default [
     shift: null,
     classes: ['half', 'arrow'],
   },
-  { code: 'ArrowRight', key: '→', shift: null, classes: ['arrow'] },
+  {
+    code: 'ArrowRight', key: '→', shift: null, classes: ['arrow'],
+  },
 ];

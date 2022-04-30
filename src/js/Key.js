@@ -1,12 +1,14 @@
 import { createDomNode } from './common';
 
 export default class Key {
-  constructor({ key, code, shift, classes = [] }) {
+  constructor({
+    key, code, shift, classes = [],
+  }) {
     this.key = key;
     this.code = code;
     this.shift = shift;
     this.classPrefix = 'keyboard__key-';
-    this.classes = ['keyboard__key', ...classes.map(cl => `${this.classPrefix}${cl}`)];
+    this.classes = ['keyboard__key', ...classes.map((cl) => `${this.classPrefix}${cl}`)];
     this.init();
     this.setBtn();
   }
