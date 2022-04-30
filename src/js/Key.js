@@ -10,7 +10,6 @@ export default class Key {
     this.classPrefix = 'keyboard__key-';
     this.classes = ['keyboard__key', ...classes.map((cl) => `${this.classPrefix}${cl}`)];
     this.init();
-    this.setBtn();
   }
 
   init() {
@@ -30,19 +29,6 @@ export default class Key {
         this.type = 'double';
         this.classes.push(`${this.classPrefix}double`);
         break;
-    }
-  }
-
-  setBtn() {
-    this.btn = createDomNode('button', { 'data-code': this.code }, ...this.classes);
-    if (this.type !== 'double') {
-      this.btn.innerText = this.key;
-    } else {
-      const firstSpan = createDomNode('span', '', 'first');
-      firstSpan.innerText = this.key;
-      const secondSpan = createDomNode('span', '', 'second');
-      secondSpan.innerText = this.shift;
-      this.btn.append(firstSpan, secondSpan);
     }
   }
 }

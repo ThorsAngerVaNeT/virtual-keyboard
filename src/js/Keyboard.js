@@ -6,6 +6,7 @@ export default class Keyboard {
     this.langs = langs;
     this.rowsMap = rowsMap;
     this.keys = {};
+    this.btns = [];
     this.state = {
       alt: false, caps: false, ctrl: false, shift: false,
     };
@@ -34,9 +35,8 @@ export default class Keyboard {
     this.keyboardInput.onkeyup = (e) => this.eventListener(e);
 
     const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
-    Object.keys(this.langs).forEach((l) => {
-      this.createLangKeys(l, this.langs[l]);
-    });
+    this.createLangKeys();
+
     this.rowsMap.forEach((row) => {
       const keyboardRow = createDomNode('div', '', 'keyboard__row');
       let currentHalfContainer;
@@ -61,16 +61,27 @@ export default class Keyboard {
     document.body.append(this.keyboardInput, keyboardWrapper);
   }
 
+  #createBtn(keyObj) {
+    const btn = createDomNode('button', { 'data-code': keyObj.code }, ...keyObj.classes);
+    const firstSpan = createDomNode('span', '', 'first');
+    firstSpan.innerText = keyObj.key;
+    const secondSpan = createDomNode('span', '', 'second');
+    secondSpan.innerText = keyObj.type !== 'double' ? '' : keyObj.shift;
+    btn.append(firstSpan, secondSpan);
+    btn.code = keyObj.code;
+    btn.onclick = (e) => this.eventListener(e);
+    this.btns.push(btn);
+    return btn;
+  }
+
   eventListener(e) {
-    // console.log('e: ', e);
     e.preventDefault();
     const keyObj = this.keys[this.currentLang].find((key) => key.code === (e.code || e.target.getAttribute('data-code')));
-    // console.log('keyObj: ', keyObj);
     if (keyObj) {
       const {
         btn, code, key, shift, type,
       } = keyObj;
-      if (type === 'fn' && e.repeat) return;
+      // if (type === 'fn' && e.repeat) return;
       if (e.type === 'keydown' || e.target.classList.contains('keyboard__key')) {
         if (btn.classList.contains('keyboard__key-toggle') && btn.classList.contains('active')) btn.classList.remove('active');
         else btn.classList.add('active');
@@ -80,6 +91,8 @@ export default class Keyboard {
         }
         if (key === 'Ctrl') this.state.ctrl = !this.state.ctrl;
         if (key === 'Alt') this.state.alt = !this.state.alt;
+        if (type === 'key') this.keyboardInput.value += this.state.shift !== this.state.caps ? shift : key;
+        if (type === 'double') this.keyboardInput.value += this.state.shift ? shift : key;
       }
       if (code === 'ShiftRight' || code === 'ShiftLeft') {
         this.state.shift = e.type === 'keydown';
@@ -116,8 +129,6 @@ export default class Keyboard {
               break;
           }
         }
-        if (type === 'key') this.keyboardInput.value += this.state.shift !== this.state.caps ? shift : key;
-        if (type === 'double') this.keyboardInput.value += this.state.shift ? shift : key;
         if (!btn.classList.contains('keyboard__key-toggle')) {
           btn.classList.remove('active');
         }
@@ -126,18 +137,22 @@ export default class Keyboard {
     }
   }
 
-  createLangKeys(lang, keys) {
-    this.keys[lang] = keys.map((key) => {
-      const keyObj = new Key(key);
-      keyObj.btn.onclick = (e) => this.eventListener(e);
-      return keyObj;
+  createLangKeys() {
+    Object.keys(this.langs).forEach((l) => {
+      this.keys[l] = this.langs[l].map((key) => {
+        const keyObj = new Key(key);
+        const btn = this.btns.find((b) => b.code === keyObj.code);
+        keyObj.btn = btn || this.#createBtn(keyObj);
+        return keyObj;
+      });
     });
   }
 
   switchCase() {
     const keys = this.keys[this.currentLang].filter((key) => key.type === 'key');
     keys.forEach((key, i) => {
-      keys[i].btn.innerText = key[this.state.shift !== this.state.caps ? 'shift' : 'key'];
+      keys[i].btn.children[0].innerText = key[this.state.shift !== this.state.caps ? 'shift' : 'key'];
+      keys[i].btn.children[1].innerText = '';
     });
   }
 
@@ -150,8 +165,8 @@ export default class Keyboard {
   }
 
   switchLanguage() {
-    // console.log('was:', this.currentLang);
     this.currentLang = this.currentLang === 'en' ? 'ru' : 'en';
-    // console.log('now:', this.currentLang);
+    this.switchCase();
+    this.switchDouble();
   }
 }
