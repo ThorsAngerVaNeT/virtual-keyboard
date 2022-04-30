@@ -30,9 +30,9 @@ export default class Keyboard {
       'keyboard__input',
     );
 
-    this.keyboardInput.onkeydown = (e) => this.eventListener(e);
+    document.onkeydown = (e) => this.eventListener(e);
 
-    this.keyboardInput.onkeyup = (e) => this.eventListener(e);
+    document.onkeyup = (e) => this.eventListener(e);
 
     const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
     this.createLangKeys();
@@ -59,6 +59,7 @@ export default class Keyboard {
     });
     document.body.innerHTML = '';
     document.body.append(this.keyboardInput, keyboardWrapper);
+    console.log('init:', this.state);
   }
 
   #createBtn(keyObj) {
@@ -75,27 +76,31 @@ export default class Keyboard {
   }
 
   eventListener(e) {
+    if (e.stopPropagation) e.stopPropagation();
     e.preventDefault();
     const keyObj = this.keys[this.currentLang].find((key) => key.code === (e.code || e.target.getAttribute('data-code')));
     if (keyObj) {
       const {
         btn, code, key, shift, type,
       } = keyObj;
-      if (type === 'fn' && e.repeat) return;
+      if (code.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
+      console.log(e.code, e.ctrlKey, e.type, e);
       if (e.type === 'keydown' || e.target.classList.contains('keyboard__key')) {
         let cursorPos = document.querySelector('.keyboard__input').selectionStart;
         const cursorPosEnd = document.querySelector('.keyboard__input').selectionEnd;
         const left = this.keyboardInput.value.slice(0, cursorPos);
         const right = this.keyboardInput.value.slice(cursorPosEnd);
 
-        if (btn.classList.contains('keyboard__key-toggle') && btn.classList.contains('active')) btn.classList.remove('active');
-        else btn.classList.add('active');
+        btn.classList.add('active');
 
         if (code === 'CapsLock') {
+          if (btn.classList.contains('toggled')) btn.classList.remove('toggled');
+          else btn.classList.add('toggled');
           this.state.caps = !this.state.caps;
           this.switchCase();
         }
 
+        if ((this.state.ctrl && this.state.alt)) this.switchLanguage();
         if (type === 'fn') {
           switch (code) {
             case 'Tab':
@@ -119,12 +124,12 @@ export default class Keyboard {
 
             case 'ControlLeft':
             case 'ControlRigth':
-              this.state.ctrl = !this.state.ctrl;
+              this.state.ctrl = true;
               break;
 
             case 'AltLeft':
             case 'AltRight':
-              this.state.alt = !this.state.alt;
+              this.state.alt = true;
               break;
 
             default:
@@ -148,28 +153,16 @@ export default class Keyboard {
         this.switchCase();
         this.switchDouble();
       }
+
       if (e.type === 'keyup' || e.target.classList.contains('keyboard__key')) {
-        if (this.state.ctrl && this.state.alt) this.switchLanguage();
-
-        if (type === 'fn') {
-          switch (code) {
-            case 'ControlLeft':
-            case 'ControlRigth':
-              this.state.ctrl = !this.state.ctrl;
-              break;
-
-            case 'AltLeft':
-            case 'AltRight':
-              this.state.alt = !this.state.alt;
-              break;
-
-            default:
-              break;
-          }
+        if (code === 'ControlLeft' || code === 'ControlRigth') {
+          this.state.ctrl = false;
         }
-        if (!btn.classList.contains('keyboard__key-toggle')) {
-          btn.classList.remove('active');
+        if (code === 'AltLeft' || code === 'AltRight') {
+          this.state.alt = false;
         }
+
+        btn.classList.remove('active');
       }
 
       if (document.activeElement !== this.keyboardInput) {
@@ -206,6 +199,7 @@ export default class Keyboard {
   }
 
   switchLanguage() {
+    console.log(this.state);
     this.currentLang = this.currentLang === 'en' ? 'ru' : 'en';
     this.switchCase();
     this.switchDouble();
