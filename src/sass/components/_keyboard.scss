@@ -23,6 +23,7 @@
   border: 2px outset #767676;
   border-radius: 5px;
   background: $color-gray-light;
+  outline: none;
   font-weight: 700;
 
   &:active,
@@ -58,6 +59,11 @@
   .keyboard__key-fn {
     text-align: center;
   }
+}
+
+.keyboard__key-arrow {
+  background: rgb(240, 193, 106);
+  font-weight: 900;
 }
 
 .keyboard__key-half {

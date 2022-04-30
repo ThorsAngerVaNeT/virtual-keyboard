@@ -81,18 +81,67 @@ export default class Keyboard {
       const {
         btn, code, key, shift, type,
       } = keyObj;
-      // if (type === 'fn' && e.repeat) return;
+      if (type === 'fn' && e.repeat) return;
       if (e.type === 'keydown' || e.target.classList.contains('keyboard__key')) {
+        let cursorPos = document.querySelector('.keyboard__input').selectionStart;
+        const cursorPosEnd = document.querySelector('.keyboard__input').selectionEnd;
+        const left = this.keyboardInput.value.slice(0, cursorPos);
+        const right = this.keyboardInput.value.slice(cursorPosEnd);
+
         if (btn.classList.contains('keyboard__key-toggle') && btn.classList.contains('active')) btn.classList.remove('active');
         else btn.classList.add('active');
+
         if (code === 'CapsLock') {
           this.state.caps = !this.state.caps;
           this.switchCase();
         }
-        if (key === 'Ctrl') this.state.ctrl = !this.state.ctrl;
-        if (key === 'Alt') this.state.alt = !this.state.alt;
-        if (type === 'key') this.keyboardInput.value += this.state.shift !== this.state.caps ? shift : key;
-        if (type === 'double') this.keyboardInput.value += this.state.shift ? shift : key;
+
+        if (type === 'fn') {
+          switch (code) {
+            case 'Tab':
+              this.keyboardInput.value = `${left}\t${right}`;
+              cursorPos += 1;
+              break;
+
+            case 'Enter':
+              this.keyboardInput.value = `${left}\n${right}`;
+              cursorPos += 1;
+              break;
+
+            case 'Backspace':
+              if (cursorPos === cursorPosEnd) {
+                this.keyboardInput.value = `${left.slice(0, -1)}${right}`;
+                cursorPos -= 1;
+              } else {
+                this.keyboardInput.value = `${left}${right}`;
+              }
+              break;
+
+            case 'ControlLeft':
+            case 'ControlRigth':
+              this.state.ctrl = !this.state.ctrl;
+              break;
+
+            case 'AltLeft':
+            case 'AltRight':
+              this.state.alt = !this.state.alt;
+              break;
+
+            default:
+              break;
+          }
+        }
+
+        if (type === 'key') {
+          this.keyboardInput.value = `${left}${this.state.shift !== this.state.caps ? shift : key}${right}`;
+          cursorPos += 1;
+        }
+        if (type === 'double') {
+          this.keyboardInput.value = `${left}${this.state.shift ? shift : key}${right}`;
+          cursorPos += 1;
+        }
+
+        this.keyboardInput.setSelectionRange(cursorPos, cursorPos);
       }
       if (code === 'ShiftRight' || code === 'ShiftLeft') {
         this.state.shift = e.type === 'keydown';
@@ -101,20 +150,9 @@ export default class Keyboard {
       }
       if (e.type === 'keyup' || e.target.classList.contains('keyboard__key')) {
         if (this.state.ctrl && this.state.alt) this.switchLanguage();
+
         if (type === 'fn') {
           switch (code) {
-            case 'Tab':
-              this.keyboardInput.value += '\t';
-              break;
-
-            case 'Enter':
-              this.keyboardInput.value += '\n';
-              break;
-
-            case 'Backspace':
-              this.keyboardInput.value += '\n';
-              break;
-
             case 'ControlLeft':
             case 'ControlRigth':
               this.state.ctrl = !this.state.ctrl;
@@ -133,7 +171,10 @@ export default class Keyboard {
           btn.classList.remove('active');
         }
       }
-      if (document.activeElement !== this.keyboardInput) this.keyboardInput.focus();
+
+      if (document.activeElement !== this.keyboardInput) {
+        this.keyboardInput.focus();
+      }
     }
   }
 
