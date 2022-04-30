@@ -303,21 +303,21 @@ export default [
     shift: null,
   },
   {
-    code: 'ArrowLeft', key: '←', shift: null, classes: ['arrow'],
+    code: 'ArrowLeft', key: '←', shift: '', classes: ['arrow'],
   },
   {
     code: 'ArrowUp',
     key: '↑',
-    shift: null,
+    shift: '',
     classes: ['half', 'arrow'],
   },
   {
     code: 'ArrowDown',
     key: '↓',
-    shift: null,
+    shift: '',
     classes: ['half', 'arrow'],
   },
   {
-    code: 'ArrowRight', key: '→', shift: null, classes: ['arrow'],
+    code: 'ArrowRight', key: '→', shift: '', classes: ['arrow'],
   },
 ];
