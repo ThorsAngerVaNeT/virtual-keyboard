@@ -62,8 +62,10 @@ export default class Keyboard {
   }
 
   eventListener(e) {
+    // console.log('e: ', e);
     e.preventDefault();
     const keyObj = this.keys[this.currentLang].find((key) => key.code === (e.code || e.target.getAttribute('data-code')));
+    // console.log('keyObj: ', keyObj);
     if (keyObj) {
       const {
         btn, code, key, shift, type,
@@ -76,6 +78,8 @@ export default class Keyboard {
           this.state.caps = !this.state.caps;
           this.switchCase();
         }
+        if (key === 'Ctrl') this.state.ctrl = !this.state.ctrl;
+        if (key === 'Alt') this.state.alt = !this.state.alt;
       }
       if (code === 'ShiftRight' || code === 'ShiftLeft') {
         this.state.shift = e.type === 'keydown';
@@ -83,6 +87,7 @@ export default class Keyboard {
         this.switchDouble();
       }
       if (e.type === 'keyup' || e.target.classList.contains('keyboard__key')) {
+        if (this.state.ctrl && this.state.alt) this.switchLanguage();
         if (type === 'fn') {
           switch (code) {
             case 'Tab':
@@ -97,13 +102,25 @@ export default class Keyboard {
               this.keyboardInput.value += '\n';
               break;
 
+            case 'ControlLeft':
+            case 'ControlRigth':
+              this.state.ctrl = !this.state.ctrl;
+              break;
+
+            case 'AltLeft':
+            case 'AltRight':
+              this.state.alt = !this.state.alt;
+              break;
+
             default:
               break;
           }
         }
         if (type === 'key') this.keyboardInput.value += this.state.shift !== this.state.caps ? shift : key;
         if (type === 'double') this.keyboardInput.value += this.state.shift ? shift : key;
-        if (!btn.classList.contains('keyboard__key-toggle')) btn.classList.remove('active');
+        if (!btn.classList.contains('keyboard__key-toggle')) {
+          btn.classList.remove('active');
+        }
       }
       if (document.activeElement !== this.keyboardInput) this.keyboardInput.focus();
     }
@@ -130,5 +147,11 @@ export default class Keyboard {
       doubles[i].btn.children[0].innerText = key[this.state.shift ? 'shift' : 'key'];
       doubles[i].btn.children[1].innerText = key[this.state.shift ? 'key' : 'shift'];
     });
+  }
+
+  switchLanguage() {
+    // console.log('was:', this.currentLang);
+    this.currentLang = this.currentLang === 'en' ? 'ru' : 'en';
+    // console.log('now:', this.currentLang);
   }
 }
