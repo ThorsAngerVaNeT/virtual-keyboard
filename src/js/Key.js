@@ -1,5 +1,3 @@
-import { createDomNode } from './common';
-
 export default class Key {
   constructor({
     key, code, shift, classes = [],
