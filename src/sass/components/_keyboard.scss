@@ -113,6 +113,8 @@
   // margin: 5rem 0;
   border: 2px solid $color-gray-dark;
   border-radius: 10px;
+  background-color: lighten($color-blue, 10);
+  outline: none;
   resize: none;
 }
 
