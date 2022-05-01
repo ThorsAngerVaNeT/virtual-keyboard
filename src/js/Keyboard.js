@@ -7,6 +7,7 @@ export default class Keyboard {
     this.rowsMap = rowsMap;
     this.keys = {};
     this.btns = [];
+    this.pressed = new Set();
     this.state = {
       alt: false, caps: false, ctrl: false, shift: false,
     };
@@ -34,6 +35,17 @@ export default class Keyboard {
 
     document.onkeyup = (e) => this.eventListener(e);
 
+    window.onblur = () => {
+      [...this.pressed].forEach((btn) => {
+        btn.classList.remove('active');
+        this.pressed.delete(btn);
+      });
+      this.state = {
+        ...this.state, alt: false, ctrl: false, shift: false,
+      };
+      this.switchCase();
+    };
+
     const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
     this.createLangKeys();
 
@@ -59,7 +71,6 @@ export default class Keyboard {
     });
     document.body.innerHTML = '';
     document.body.append(this.keyboardInput, keyboardWrapper);
-    console.log('init:', this.state);
   }
 
   #createBtn(keyObj) {
@@ -84,8 +95,8 @@ export default class Keyboard {
         btn, code, key, shift, type,
       } = keyObj;
       if (code.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
-      console.log(e.code, e.ctrlKey, e.type, e);
       if (e.type === 'keydown' || e.target.classList.contains('keyboard__key')) {
+        this.pressed.add(btn);
         let cursorPos = document.querySelector('.keyboard__input').selectionStart;
         const cursorPosEnd = document.querySelector('.keyboard__input').selectionEnd;
         const left = this.keyboardInput.value.slice(0, cursorPos);
@@ -162,6 +173,7 @@ export default class Keyboard {
           this.state.alt = false;
         }
 
+        this.pressed.delete(btn);
         btn.classList.remove('active');
       }
 
@@ -199,7 +211,6 @@ export default class Keyboard {
   }
 
   switchLanguage() {
-    console.log(this.state);
     this.currentLang = this.currentLang === 'en' ? 'ru' : 'en';
     this.switchCase();
     this.switchDouble();
