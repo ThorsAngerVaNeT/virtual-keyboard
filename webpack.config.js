@@ -14,7 +14,6 @@ const config = {
   output: {
     path: path.resolve(__dirname, 'dist'),
   },
-  devtool: isProduction ? 'none' : 'source-map',
   devServer: {
     open: true,
     host: 'localhost',
@@ -58,6 +57,7 @@ module.exports = () => {
     config.mode = 'production';
   } else {
     config.mode = 'development';
+    config.devtool = 'source-map';
   }
   return config;
 };
