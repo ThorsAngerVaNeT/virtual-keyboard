@@ -1,14 +1,16 @@
 @import '../abstracts/variables';
 
 .keyboard__wrapper {
-  max-width: 90rem;
+  max-width: 91rem;
   width: 100%;
   padding: 10px;
+  margin: 10px;
   // height: 300px;
-  position: absolute;
+  // position: absolute;
   bottom: 50px;
   background: $color-gray;
   border-radius: 1rem;
+  border: 5px outset $color-gray-dark;
 }
 
 .keyboard__row {
@@ -20,7 +22,7 @@
   min-width: 5rem;
   margin: 5px;
   padding: 5px;
-  border: 2px outset #767676;
+  border: 2px outset $color-key-border;
   border-radius: 5px;
   background: $color-gray-light;
   outline: none;
@@ -28,13 +30,20 @@
 
   &:active,
   &.active {
-    border: 2px inset #767676;
+    background-color: darken($color-gray-light, 10);
+    border: 2px inset $color-key-border;
+    // box-shadow: 0 0 4px 1px white;
   }
 }
 
 .keyboard__key-fn {
   flex-grow: 1;
   background: $color-gray-dark;
+
+  &:active,
+  &.active {
+    background-color: darken($color-gray-dark, 7);
+  }
 }
 
 .keyboard__key-fn:first-of-type {
@@ -49,6 +58,11 @@
 .keyboard__key-blue {
   flex-grow: 50;
   background: $color-blue;
+
+  &:active,
+  &.active {
+    background-color: darken($color-blue, 10);
+  }
 }
 
 .keyboard__key-half-container {
@@ -62,8 +76,13 @@
 }
 
 .keyboard__key-arrow {
-  background: rgb(240, 193, 106);
+  background: $color-orange;
   font-weight: 900;
+
+  &:active,
+  &.active {
+    background-color: darken($color-orange, 10);
+  }
 }
 
 .keyboard__key-half {
@@ -91,7 +110,7 @@
 
 .keyboard__input {
   padding: 2rem;
-  margin-top: 10rem;
+  // margin: 5rem 0;
   border: 2px solid $color-gray-dark;
   border-radius: 10px;
   resize: none;
