@@ -24,8 +24,14 @@ export default class Keyboard {
   }
 
   init() {
-    const lang = window.localStorage.getItem('vk-lang') || 'en';
-    this.currentLang = lang;
+    let storageLang = window.localStorage.getItem('vk-lang');
+
+    if (!storageLang || !this.langs[storageLang]) {
+      storageLang = 'en';
+      window.localStorage.setItem('vk-lang', storageLang);
+    }
+
+    this.currentLang = storageLang;
     this.#renderKeyboard();
     this.#addListeners();
   }
