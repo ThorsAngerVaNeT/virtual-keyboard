@@ -234,7 +234,9 @@ export default class Keyboard {
 
   switchLanguage() {
     const langs = Object.keys(this.langs);
-    this.currentLang = langs[(langs.indexOf(this.currentLang) + 1) % langs.length];
+    const currentLangIndex = langs.indexOf(this.currentLang);
+    const nextLangIndex = (currentLangIndex + 1) % langs.length;
+    this.currentLang = langs[nextLangIndex];
     window.localStorage.setItem('vk-lang', this.currentLang);
     this.switchCase();
     this.switchDouble();
