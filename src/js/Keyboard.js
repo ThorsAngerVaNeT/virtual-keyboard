@@ -140,7 +140,7 @@ export default class Keyboard {
           cursorPos += 1;
         }
 
-        if (!['Shift', 'Ctrl', 'Alt', 'CapsLock'].includes(key) && !(this.state.ctrl || this.state.alt)) {  this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
+        if (!['Shift', 'Ctrl', 'Alt', 'CapsLock'].includes(key) && !(this.state.ctrl || this.state.alt)) { this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
       }
       if (code === 'ShiftRight' || code === 'ShiftLeft') {
         this.state.shift = e.type === 'keydown' || e.type === 'mousedown';
@@ -160,6 +160,7 @@ export default class Keyboard {
         btn.classList.remove('active');
       }
 
+      this.keyboardInput.focus();
     }
   }
 
