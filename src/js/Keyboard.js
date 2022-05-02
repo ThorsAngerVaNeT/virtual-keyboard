@@ -23,7 +23,10 @@ export default class Keyboard {
     }
   }
 
-  init(lang = 'en') {
+  init() {
+    const lang = window.localStorage.getItem('vk-lang') || 'en';
+    console.log('lang: ', lang);
+    console.log('vk-lang ', window.localStorage.getItem('vk-lang'));
     this.currentLang = lang;
     this.#renderKeyboard();
     this.#addListeners();
@@ -48,7 +51,7 @@ export default class Keyboard {
   }
 
   #createBtn(keyObj) {
-    const btn = createDomNode('button', { 'data-code': keyObj.code }, ...keyObj.classes);
+    const btn = createDomNode('button', '', ...keyObj.classes);
     const firstSpan = createDomNode('span', '', 'first');
     firstSpan.innerText = keyObj.key;
     const secondSpan = createDomNode('span', '', 'second');
@@ -157,7 +160,7 @@ export default class Keyboard {
   }
 
   #createLangKeys() {
-    Object.keys(this.langs).forEach((l) => {
+    Object.keys(this.langs).sort((a) => (a === this.currentLang ? -1 : 1)).forEach((l) => {
       this.keys[l] = this.langs[l].map((key) => {
         const keyObj = new Key(key);
         const btn = this.btns.find((b) => b.code === keyObj.code);
@@ -232,6 +235,7 @@ export default class Keyboard {
 
   switchLanguage() {
     this.currentLang = this.currentLang === 'en' ? 'ru' : 'en';
+    window.localStorage.setItem('vk-lang', this.currentLang);
     this.switchCase();
     this.switchDouble();
   }
