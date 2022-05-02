@@ -1,7 +1,7 @@
 @import '../abstracts/variables';
 
 .keyboard__wrapper {
-  max-width: 91rem;
+  max-width: 93rem;
   width: 100%;
   padding: 10px;
   margin: 10px;
@@ -97,11 +97,6 @@
   flex-direction: column-reverse;
   align-items: center;
   justify-content: center;
-
-  .second {
-    font-size: 1.3rem;
-    font-weight: 400;
-  }
 }
 
 .keyboard__key-double > span {
