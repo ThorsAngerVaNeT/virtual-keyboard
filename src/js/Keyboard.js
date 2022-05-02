@@ -62,7 +62,8 @@ export default class Keyboard {
     secondSpan.innerText = keyObj.type !== 'double' ? '' : keyObj.shift;
     btn.append(firstSpan, secondSpan);
     btn.code = keyObj.code;
-    btn.onclick = (e) => this.#eventHandler(e, keyObj);
+    btn.onmousedown = (e) => this.#eventHandler(e, keyObj);
+    btn.onmouseup = (e) => this.#eventHandler(e, keyObj);
     this.btns.push(btn);
     return btn;
   }
@@ -77,7 +78,7 @@ export default class Keyboard {
         btn, code, key, shift, type,
       } = keyObj;
       if (code.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
-      if (e.type === 'keydown' || e.target.closest('.keyboard__key')) {
+      if (e.type === 'keydown' || e.type === 'mousedown') {
         this.pressed.add(btn);
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
@@ -142,12 +143,12 @@ export default class Keyboard {
         if (!['Shift', 'Ctrl', 'Alt', 'CapsLock'].includes(key)) { this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
       }
       if (code === 'ShiftRight' || code === 'ShiftLeft') {
-        this.state.shift = e.type === 'keydown';
+        this.state.shift = e.type === 'keydown' || e.type === 'mousedown';
         this.switchCase();
         this.switchDouble();
       }
 
-      if (e.type === 'keyup' || e.type === 'click') {
+      if (e.type === 'keyup' || e.type === 'mouseup') {
         if (code === 'ControlLeft' || code === 'ControlRigth') {
           this.state.ctrl = false;
         }
