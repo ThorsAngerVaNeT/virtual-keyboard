@@ -69,7 +69,6 @@ export default class Keyboard {
   }
 
   #eventHandler(e, clickedKey) {
-    e.preventDefault();
     if (e.stopPropagation) e.stopPropagation();
 
     const keyObj = clickedKey || this.keys[this.currentLang].find((key) => key.code === (e.code));
@@ -77,6 +76,7 @@ export default class Keyboard {
       const {
         btn, code, key, shift, type,
       } = keyObj;
+      if (type !== 'fn' && !(this.state.ctrl || this.state.alt)) e.preventDefault();
       if (code.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
       if (e.type === 'keydown' || e.type === 'mousedown') {
         this.pressed.add(btn);
@@ -131,16 +131,16 @@ export default class Keyboard {
         }
         if ((this.state.ctrl && this.state.alt)) this.switchLanguage();
 
-        if (type === 'key') {
+        if (type === 'key' && !(this.state.ctrl || this.state.alt)) {
           this.keyboardInput.value = `${left}${this.state.shift !== this.state.caps ? shift : key}${right}`;
           cursorPos += 1;
         }
-        if (type === 'double') {
+        if (type === 'double' && !(this.state.ctrl || this.state.alt)) {
           this.keyboardInput.value = `${left}${this.state.shift ? shift : key}${right}`;
           cursorPos += 1;
         }
 
-        if (!['Shift', 'Ctrl', 'Alt', 'CapsLock'].includes(key)) { this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
+        if (!['Shift', 'Ctrl', 'Alt', 'CapsLock'].includes(key) && !(this.state.ctrl || this.state.alt)) {  this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
       }
       if (code === 'ShiftRight' || code === 'ShiftLeft') {
         this.state.shift = e.type === 'keydown' || e.type === 'mousedown';
@@ -160,7 +160,6 @@ export default class Keyboard {
         btn.classList.remove('active');
       }
 
-      this.keyboardInput.focus();
     }
   }
 
