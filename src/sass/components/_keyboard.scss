@@ -32,7 +32,7 @@
   &.active {
     background-color: darken($color-gray-light, 10);
     border: 2px inset $color-key-border;
-    // box-shadow: 0 0 4px 1px white;
+    transform: translateX(1px);
   }
 }
 
