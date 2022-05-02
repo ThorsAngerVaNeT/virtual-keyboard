@@ -152,7 +152,7 @@ export default class Keyboard {
         btn.classList.remove('active');
       }
 
-      if (type !== 'fn') { this.keyboardInput.focus(); }
+      this.keyboardInput.focus();
     }
   }
 
