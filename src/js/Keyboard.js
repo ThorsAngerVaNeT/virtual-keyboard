@@ -11,10 +11,10 @@ export default class Keyboard {
     this.state = {
       alt: false, caps: false, ctrl: false, shift: false,
     };
-    this.checkInitParams();
+    this.#checkInitParams();
   }
 
-  checkInitParams() {
+  #checkInitParams() {
     const codes = this.rowsMap.flat();
     if (!Array.from(this.langs)
       .every((lang) => codes.every((code) => lang.find((key) => key.code === code)))
@@ -30,9 +30,9 @@ export default class Keyboard {
   }
 
   #addListeners() {
-    document.onkeydown = (e) => this.eventListener(e);
+    document.onkeydown = (e) => this.#eventHandler(e);
 
-    document.onkeyup = (e) => this.eventListener(e);
+    document.onkeyup = (e) => this.#eventHandler(e);
 
     window.onblur = () => {
       [...this.pressed].forEach((btn) => {
@@ -43,6 +43,7 @@ export default class Keyboard {
         ...this.state, alt: false, ctrl: false, shift: false,
       };
       this.switchCase();
+      this.switchDouble();
     };
   }
 
@@ -54,24 +55,25 @@ export default class Keyboard {
     secondSpan.innerText = keyObj.type !== 'double' ? '' : keyObj.shift;
     btn.append(firstSpan, secondSpan);
     btn.code = keyObj.code;
-    btn.onclick = (e) => this.eventListener(e);
+    btn.onclick = (e) => this.#eventHandler(e, keyObj);
     this.btns.push(btn);
     return btn;
   }
 
-  eventListener(e) {
-    if (e.stopPropagation) e.stopPropagation();
+  #eventHandler(e, clickedKey) {
     e.preventDefault();
-    const keyObj = this.keys[this.currentLang].find((key) => key.code === (e.code || e.target.getAttribute('data-code')));
+    if (e.stopPropagation) e.stopPropagation();
+
+    const keyObj = clickedKey || this.keys[this.currentLang].find((key) => key.code === (e.code));
     if (keyObj) {
       const {
         btn, code, key, shift, type,
       } = keyObj;
       if (code.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
-      if (e.type === 'keydown' || e.target.classList.contains('keyboard__key')) {
+      if (e.type === 'keydown' || e.target.closest('.keyboard__key')) {
         this.pressed.add(btn);
-        let cursorPos = document.querySelector('.keyboard__input').selectionStart;
-        const cursorPosEnd = document.querySelector('.keyboard__input').selectionEnd;
+        let cursorPos = this.keyboardInput.selectionStart;
+        const cursorPosEnd = this.keyboardInput.selectionEnd;
         const left = this.keyboardInput.value.slice(0, cursorPos);
         const right = this.keyboardInput.value.slice(cursorPosEnd);
 
@@ -130,7 +132,7 @@ export default class Keyboard {
           cursorPos += 1;
         }
 
-        this.keyboardInput.setSelectionRange(cursorPos, cursorPos);
+        if (!['Shift', 'Ctrl', 'Alt', 'CapsLock'].includes(key)) { this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
       }
       if (code === 'ShiftRight' || code === 'ShiftLeft') {
         this.state.shift = e.type === 'keydown';
@@ -138,7 +140,7 @@ export default class Keyboard {
         this.switchDouble();
       }
 
-      if (e.type === 'keyup' || e.target.classList.contains('keyboard__key')) {
+      if (e.type === 'keyup' || e.type === 'click') {
         if (code === 'ControlLeft' || code === 'ControlRigth') {
           this.state.ctrl = false;
         }
@@ -150,9 +152,7 @@ export default class Keyboard {
         btn.classList.remove('active');
       }
 
-      if (document.activeElement !== this.keyboardInput) {
-        this.keyboardInput.focus();
-      }
+      if (type !== 'fn') { this.keyboardInput.focus(); }
     }
   }
 
