@@ -228,6 +228,7 @@ export default class Keyboard {
   switchDouble() {
     const doubles = this.keys[this.currentLang].filter((key) => key.type === 'double');
     doubles.forEach((key, i) => {
+      key.btn.classList.add('keyboard__key-double');
       doubles[i].btn.children[0].innerText = key[this.state.shift ? 'shift' : 'key'];
       doubles[i].btn.children[1].innerText = key[this.state.shift ? 'key' : 'shift'];
     });
