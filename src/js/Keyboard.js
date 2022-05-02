@@ -25,8 +25,6 @@ export default class Keyboard {
 
   init() {
     const lang = window.localStorage.getItem('vk-lang') || 'en';
-    console.log('lang: ', lang);
-    console.log('vk-lang ', window.localStorage.getItem('vk-lang'));
     this.currentLang = lang;
     this.#renderKeyboard();
     this.#addListeners();
@@ -209,7 +207,7 @@ export default class Keyboard {
     });
 
     const author = createDomNode('div', '', 'author');
-    const github = createDomNode('a', { href: 'https://github.com/ThorsAngerVaNeT', title: 'GitHub' }, 'link');
+    const github = createDomNode('a', { href: 'https://github.com/ThorsAngerVaNeT', target: '_blank', title: 'GitHub' }, 'link');
     github.innerText = 'Vadzim Antonau © 2022';
     author.append(github);
 
@@ -235,7 +233,8 @@ export default class Keyboard {
   }
 
   switchLanguage() {
-    this.currentLang = this.currentLang === 'en' ? 'ru' : 'en';
+    const langs = Object.keys(this.langs);
+    this.currentLang = langs[(langs.indexOf(this.currentLang) + 1) % langs.length];
     window.localStorage.setItem('vk-lang', this.currentLang);
     this.switchCase();
     this.switchDouble();
