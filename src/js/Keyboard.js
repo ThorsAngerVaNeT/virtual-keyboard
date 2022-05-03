@@ -66,8 +66,7 @@ export default class Keyboard {
       btn.append(toggle);
     }
     btn.code = keyObj.code;
-    btn.onmousedown = (e) => this.#eventHandler(e, keyObj);
-    btn.onmouseup = (e) => this.#eventHandler(e, keyObj);
+    btn.onclick = (e) => this.#eventHandler(e, keyObj);
     this.btns.push(btn);
     return btn;
   }
@@ -82,14 +81,16 @@ export default class Keyboard {
       } = keyObj;
       if (type !== 'fn' && !(this.state.ctrl || this.state.alt)) e.preventDefault();
       if (code.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
-      if (e.type === 'keydown' || e.type === 'mousedown') {
-        this.pressed.add(btn);
+      if (e.type === 'keydown' || e.type === 'click') {
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
         const left = this.keyboardInput.value.slice(0, cursorPos);
         const right = this.keyboardInput.value.slice(cursorPosEnd);
 
-        btn.classList.add('active');
+        if (e.type !== 'click') {
+          this.pressed.add(btn);
+          btn.classList.add('active');
+        }
 
         if (code === 'CapsLock') {
           if (btn.classList.contains('toggled')) btn.classList.remove('toggled');
@@ -152,7 +153,7 @@ export default class Keyboard {
         this.switchDouble();
       }
 
-      if (e.type === 'keyup' || e.type === 'mouseup') {
+      if (e.type === 'keyup') {
         if (code === 'ControlLeft' || code === 'ControlRigth') {
           this.state.ctrl = false;
         }
@@ -188,7 +189,9 @@ export default class Keyboard {
 
     this.keyboardInput = createDomNode(
       'textarea',
-      { rows: 15, cols: 100, placeholder: 'Click Here to activate keyboard!' },
+      {
+        rows: 15, cols: 100, placeholder: 'Click Here to activate keyboard!', spellcheck: false,
+      },
       'keyboard__input',
     );
 
