@@ -61,6 +61,10 @@ export default class Keyboard {
     const secondSpan = createDomNode('span', '', 'second');
     secondSpan.innerText = keyObj.type !== 'double' ? '' : keyObj.shift;
     btn.append(firstSpan, secondSpan);
+    if (keyObj.classes.includes('keyboard__key-toggle')) {
+      const toggle = createDomNode('div', '', 'toggler');
+      btn.append(toggle);
+    }
     btn.code = keyObj.code;
     btn.onmousedown = (e) => this.#eventHandler(e, keyObj);
     btn.onmouseup = (e) => this.#eventHandler(e, keyObj);

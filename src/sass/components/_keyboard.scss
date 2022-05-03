@@ -169,7 +169,7 @@
   flex-grow: 30;
 }
 
-.keyboard__key-toggle::after {
+.keyboard__key-toggle .toggler {
   content: '';
   top: 18px;
   right: 10px;
@@ -181,7 +181,7 @@
   border-radius: 50%;
 }
 
-.keyboard__key-toggle.toggled::after {
+.keyboard__key-toggle.toggled .toggler {
   opacity: 1;
   background: white;
   box-shadow: 0 0 10px 4px white;
