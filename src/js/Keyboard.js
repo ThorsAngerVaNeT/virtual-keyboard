@@ -88,9 +88,6 @@ export default class Keyboard {
         const left = this.keyboardInput.value.slice(0, cursorPos);
         const right = this.keyboardInput.value.slice(cursorPosEnd);
 
-        this.pressed.add(btn);
-        btn.classList.add('active');
-
         if (code === 'CapsLock') {
           if (btn.classList.contains('toggled')) btn.classList.remove('toggled');
           else btn.classList.add('toggled');
@@ -98,40 +95,54 @@ export default class Keyboard {
           this.switchCase();
         }
 
-        if (type === 'fn') {
-          switch (code) {
-            case 'Tab':
-              this.keyboardInput.value = `${left}\t${right}`;
-              cursorPos += 1;
-              break;
+        if (code === 'ShiftRight' || code === 'ShiftLeft') {
+          this.state.shift = true;
+          this.switchCase();
+          this.switchDouble();
+        }
 
-            case 'Enter':
-              this.keyboardInput.value = `${left}\n${right}`;
-              cursorPos += 1;
-              break;
+        if (e.type === 'mousedown' && key.match(/Alt|Ctrl|Shift/) && btn.classList.contains('active')) {
+          this.state[key.toLowerCase()] = false;
+          this.pressed.delete(btn);
+          btn.classList.remove('active');
+        } else {
+          if (type === 'fn') {
+            switch (code) {
+              case 'Tab':
+                this.keyboardInput.value = `${left}\t${right}`;
+                cursorPos += 1;
+                break;
 
-            case 'Backspace':
-              if (cursorPos === cursorPosEnd) {
-                this.keyboardInput.value = `${left.slice(0, -1)}${right}`;
-                cursorPos -= 1;
-              } else {
-                this.keyboardInput.value = `${left}${right}`;
-              }
-              break;
+              case 'Enter':
+                this.keyboardInput.value = `${left}\n${right}`;
+                cursorPos += 1;
+                break;
 
-            case 'ControlLeft':
-            case 'ControlRigth':
-              this.state.ctrl = true;
-              break;
+              case 'Backspace':
+                if (cursorPos === cursorPosEnd) {
+                  this.keyboardInput.value = `${left.slice(0, -1)}${right}`;
+                  cursorPos -= 1;
+                } else {
+                  this.keyboardInput.value = `${left}${right}`;
+                }
+                break;
 
-            case 'AltLeft':
-            case 'AltRight':
-              this.state.alt = true;
-              break;
+              case 'ControlLeft':
+              case 'ControlRigth':
+                this.state.ctrl = true;
+                break;
 
-            default:
-              break;
+              case 'AltLeft':
+              case 'AltRight':
+                this.state.alt = true;
+                break;
+
+              default:
+                break;
+            }
           }
+          this.pressed.add(btn);
+          btn.classList.add('active');
         }
         if ((this.state.ctrl && key === 'Alt') || (this.state.alt && key === 'Ctrl')) this.switchLanguage();
 
@@ -146,22 +157,25 @@ export default class Keyboard {
 
         if (!['Shift', 'Ctrl', 'Alt', 'CapsLock'].includes(key) && !(this.state.ctrl || this.state.alt)) { this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
       }
-      if (code === 'ShiftRight' || code === 'ShiftLeft') {
-        this.state.shift = e.type === 'keydown' || e.type === 'mousedown';
-        this.switchCase();
-        this.switchDouble();
-      }
 
       if (e.type === 'keyup' || e.type === 'mouseup') {
-        if (code === 'ControlLeft' || code === 'ControlRigth') {
-          this.state.ctrl = false;
+        if (e.type !== 'mouseup') {
+          if (code === 'ControlLeft' || code === 'ControlRigth') {
+            this.state.ctrl = false;
+          }
+          if (code === 'AltLeft' || code === 'AltRight') {
+            this.state.alt = false;
+          }
+          if (code === 'ShiftRight' || code === 'ShiftLeft') {
+            this.state.shift = false;
+            this.switchCase();
+            this.switchDouble();
+          }
         }
-        if (code === 'AltLeft' || code === 'AltRight') {
-          this.state.alt = false;
+        if (!(e.type === 'mouseup' && key.match(/Alt|Ctrl|Shift/))) {
+          this.pressed.delete(btn);
+          btn.classList.remove('active');
         }
-
-        this.pressed.delete(btn);
-        btn.classList.remove('active');
       }
 
       this.keyboardInput.focus();
