@@ -66,7 +66,8 @@ export default class Keyboard {
       btn.append(toggle);
     }
     btn.code = keyObj.code;
-    btn.onclick = (e) => this.#eventHandler(e, keyObj);
+    btn.onmousedown = (e) => this.#eventHandler(e, keyObj);
+    btn.onmouseup = (e) => this.#eventHandler(e, keyObj);
     this.btns.push(btn);
     return btn;
   }
@@ -80,17 +81,15 @@ export default class Keyboard {
         btn, code, key, shift, type,
       } = keyObj;
       if (type !== 'fn' && !(this.state.ctrl || this.state.alt)) e.preventDefault();
-      if (code.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
-      if (e.type === 'keydown' || e.type === 'click') {
+      if (key.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
+      if (e.type === 'keydown' || e.type === 'mousedown') {
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
         const left = this.keyboardInput.value.slice(0, cursorPos);
         const right = this.keyboardInput.value.slice(cursorPosEnd);
 
-        if (e.type !== 'click') {
-          this.pressed.add(btn);
-          btn.classList.add('active');
-        }
+        this.pressed.add(btn);
+        btn.classList.add('active');
 
         if (code === 'CapsLock') {
           if (btn.classList.contains('toggled')) btn.classList.remove('toggled');
@@ -134,7 +133,7 @@ export default class Keyboard {
               break;
           }
         }
-        if ((this.state.ctrl && this.state.alt)) this.switchLanguage();
+        if ((this.state.ctrl && key === 'Alt') || (this.state.alt && key === 'Ctrl')) this.switchLanguage();
 
         if (type === 'key' && !(this.state.ctrl || this.state.alt)) {
           this.keyboardInput.value = `${left}${this.state.shift !== this.state.caps ? shift : key}${right}`;
@@ -153,7 +152,7 @@ export default class Keyboard {
         this.switchDouble();
       }
 
-      if (e.type === 'keyup') {
+      if (e.type === 'keyup' || e.type === 'mouseup') {
         if (code === 'ControlLeft' || code === 'ControlRigth') {
           this.state.ctrl = false;
         }
