@@ -5,8 +5,6 @@
   width: 100%;
   padding: 10px;
   margin: 10px;
-  // height: 300px;
-  // position: absolute;
   bottom: 50px;
   background: $color-gray;
   border-radius: 1rem;
@@ -24,24 +22,70 @@
   padding: 5px;
   border: 2px outset $color-key-border;
   border-radius: 5px;
-  background: $color-gray-light;
   outline: none;
   font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+
+  &:hover:before,
+  &.active:before {
+    opacity: 1;
+  }
 
   &:active,
   &.active {
+    transform: translateY(1px);
+  }
+
+  &:active:after,
+  &.active:after {
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
     background-color: darken($color-gray-light, 10);
     border: 2px inset $color-key-border;
-    transform: translateX(1px);
   }
+}
+
+.keyboard__key:before {
+  content: '';
+  background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: rgbGlowing 20s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+.keyboard__key:after {
+  z-index: -1;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: $color-gray-light;
+  left: 0;
+  top: 0;
+  border-radius: 5px;
 }
 
 .keyboard__key-fn {
   flex-grow: 1;
   background: $color-gray-dark;
 
-  &:active,
-  &.active {
+  &:after {
+    background: $color-gray-dark;
+  }
+
+  &:active:after,
+  &.active:after {
     background-color: darken($color-gray-dark, 7);
   }
 }
@@ -59,8 +103,12 @@
   flex-grow: 50;
   background: $color-blue;
 
-  &:active,
-  &.active {
+  &:after {
+    background: $color-blue;
+  }
+
+  &:active:after,
+  &.active:after {
     background-color: darken($color-blue, 10);
   }
 }
@@ -79,8 +127,12 @@
   background: $color-orange;
   font-weight: 900;
 
-  &:active,
-  &.active {
+  &:after {
+    background: $color-orange;
+  }
+
+  &:active:after,
+  &.active:after {
     background-color: darken($color-orange, 10);
   }
 }
@@ -105,7 +157,6 @@
 
 .keyboard__input {
   padding: 2rem;
-  // margin: 5rem 0;
   border: 2px solid $color-gray-dark;
   border-radius: 10px;
   background-color: lighten($color-blue, 10);
@@ -134,4 +185,16 @@
   opacity: 1;
   background: white;
   box-shadow: 0 0 10px 4px white;
+}
+
+@keyframes rgbGlowing {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
