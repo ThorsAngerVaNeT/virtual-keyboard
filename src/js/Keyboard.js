@@ -43,8 +43,7 @@ export default class Keyboard {
 
     window.onblur = () => {
       [...this.pressed].forEach((btn) => {
-        btn.classList.remove('active');
-        this.pressed.delete(btn);
+        this.#resetBtn(btn);
       });
       this.state = {
         ...this.state, alt: false, ctrl: false, shift: false,
@@ -68,6 +67,7 @@ export default class Keyboard {
     btn.code = keyObj.code;
     btn.onmousedown = (e) => this.#eventHandler(e, keyObj);
     btn.onmouseup = (e) => this.#eventHandler(e, keyObj);
+    btn.onmouseleave = () => this.#resetBtn(btn);
     this.btns.push(btn);
     return btn;
   }
@@ -80,8 +80,8 @@ export default class Keyboard {
       const {
         btn, code, key, shift, type,
       } = keyObj;
-      if (type !== 'fn' && !(this.state.ctrl || this.state.alt)) e.preventDefault();
-      if (key.match(/Ctrl|Alt|Shift|Caps/) && e.repeat) return;
+      if (!(this.state.ctrl || this.state.alt)) e.preventDefault();
+      if (key.match(/Alt|Caps|Ctrl|Shift/) && e.repeat) return;
       if (e.type === 'keydown' || e.type === 'mousedown') {
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
@@ -103,8 +103,7 @@ export default class Keyboard {
 
         if (e.type === 'mousedown' && key.match(/Alt|Ctrl|Shift/) && btn.classList.contains('active')) {
           this.state[key.toLowerCase()] = false;
-          this.pressed.delete(btn);
-          btn.classList.remove('active');
+          this.#resetBtn(btn);
         } else {
           if (type === 'fn') {
             switch (code) {
@@ -173,8 +172,7 @@ export default class Keyboard {
           }
         }
         if (!(e.type === 'mouseup' && key.match(/Alt|Ctrl|Shift/))) {
-          this.pressed.delete(btn);
-          btn.classList.remove('active');
+          this.#resetBtn(btn);
         }
       }
 
@@ -240,6 +238,11 @@ export default class Keyboard {
 
     document.body.innerHTML = '';
     document.body.append(h1, desc, this.keyboardInput, keyboardWrapper, author);
+  }
+
+  #resetBtn(btn) {
+    this.pressed.delete(btn);
+    btn.classList.remove('active');
   }
 
   switchCase() {
