@@ -2,5 +2,4 @@
 
 @function rem($px) {
   @return calc($px / $doc-font-size-for-calc) + rem;
-  // @return $px/16 + rem;
 }
