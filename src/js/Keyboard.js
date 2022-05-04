@@ -42,9 +42,7 @@ export default class Keyboard {
     document.onkeyup = (e) => this.#eventHandler(e);
 
     window.onblur = () => {
-      [...this.pressed].forEach((btn) => {
-        this.#resetBtn(btn);
-      });
+      this.#resetAllBtns();
       this.state = {
         ...this.state, alt: false, ctrl: false, shift: false,
       };
@@ -143,7 +141,14 @@ export default class Keyboard {
           this.pressed.add(btn);
           btn.classList.add('active');
         }
-        if ((this.state.ctrl && key === 'Alt') || (this.state.alt && key === 'Ctrl')) this.switchLanguage();
+        if ((this.state.ctrl && key === 'Alt') || (this.state.alt && key === 'Ctrl')) {
+          this.switchLanguage();
+          if (e.type === 'mousedown') {
+            this.state.ctrl = false;
+            this.state.alt = false;
+            this.btns.filter((b) => b.textContent === 'Ctrl' || b.textContent === 'Alt').forEach((b) => this.#resetBtn(b));
+          }
+        }
 
         if (type === 'key' && !(this.state.ctrl || this.state.alt)) {
           this.keyboardInput.value = `${left}${this.state.shift !== this.state.caps ? shift : key}${right}`;
@@ -286,7 +291,6 @@ export default class Keyboard {
       },
       'keyboard__input',
     );
-    this.keyboardInput.value = 'Необязательный параметр.\nМестоположение внутри стр\nоки, откуда начинать поиск, \nнумерация индексов идёт сл\nева направо. Может быть любым целым числом. Значение по умолчанию установлено в str.length. Если оно отрицательно, трактуется как 0. Если fromIndex > str.length, параметр fromIndex будет трактоваться как str.length.\nОписание';
 
     this.keyboardInput.onmouseup = () => {
       this.selectionPos = null;
@@ -325,6 +329,12 @@ export default class Keyboard {
 
     document.body.innerHTML = '';
     document.body.append(h1, desc, this.keyboardInput, keyboardWrapper, author);
+  }
+
+  #resetAllBtns() {
+    [...this.pressed].forEach((btn) => {
+      this.#resetBtn(btn);
+    });
   }
 
   #resetBtn(btn) {
