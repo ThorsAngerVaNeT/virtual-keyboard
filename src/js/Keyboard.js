@@ -53,23 +53,22 @@ export default class Keyboard {
     };
   }
 
-  #createBtn(keyObj) {
-    const btn = createDomNode('button', '', ...keyObj.classes);
-    const firstSpan = createDomNode('span', '', 'first');
-    firstSpan.innerText = keyObj.key;
-    const secondSpan = createDomNode('span', '', 'second');
-    secondSpan.innerText = keyObj.type !== 'double' ? '' : keyObj.shift;
-    btn.append(firstSpan, secondSpan);
-    if (keyObj.classes.includes('keyboard__key-toggle')) {
-      const toggle = createDomNode('div', '', 'toggler');
-      btn.append(toggle);
-    }
-    btn.code = keyObj.code;
-    btn.onmousedown = (e) => this.#eventHandler(e, keyObj);
-    btn.onmouseup = (e) => this.#eventHandler(e, keyObj);
-    btn.onmouseleave = () => this.#resetBtn(btn);
-    this.btns.push(btn);
-    return btn;
+  #createLangKeys() {
+    Object.keys(this.langs).sort((a) => (a === this.currentLang ? -1 : 1)).forEach((l) => {
+      this.keys[l] = this.langs[l].map((key) => {
+        const keyObj = new Key(key);
+        let btn = this.btns.find((b) => b.code === keyObj.code);
+        if (!btn) {
+          btn = keyObj.createBtn();
+          btn.onmousedown = (e) => this.#eventHandler(e, keyObj);
+          btn.onmouseup = (e) => this.#eventHandler(e, keyObj);
+          btn.onmouseleave = () => this.#resetBtn(btn);
+          this.btns.push(btn);
+        }
+        keyObj.btn = btn;
+        return keyObj;
+      });
+    });
   }
 
   #eventHandler(e, clickedKey) {
@@ -220,17 +219,6 @@ export default class Keyboard {
 
       this.keyboardInput.focus();
     }
-  }
-
-  #createLangKeys() {
-    Object.keys(this.langs).sort((a) => (a === this.currentLang ? -1 : 1)).forEach((l) => {
-      this.keys[l] = this.langs[l].map((key) => {
-        const keyObj = new Key(key);
-        const btn = this.btns.find((b) => b.code === keyObj.code);
-        keyObj.btn = btn || this.#createBtn(keyObj);
-        return keyObj;
-      });
-    });
   }
 
   getPosInfo(lines) {
