@@ -141,12 +141,13 @@ export default class Keyboard {
           this.pressed.add(btn);
           btn.classList.add('active');
         }
-        if ((this.state.ctrl && key === 'Alt') || (this.state.alt && key === 'Ctrl')) {
+        if ((this.state.shift && key === 'Alt') || (this.state.alt && key === 'Shift')) {
           this.switchLanguage();
           if (e.type === 'mousedown') {
-            this.state.ctrl = false;
+            this.state.shift = false;
             this.state.alt = false;
-            this.btns.filter((b) => b.textContent === 'Ctrl' || b.textContent === 'Alt').forEach((b) => this.#resetBtn(b));
+            this.switchCase();
+            this.btns.filter((b) => b.textContent === 'Shift' || b.textContent === 'Alt').forEach((b) => this.#resetBtn(b));
           }
         }
 
@@ -282,7 +283,7 @@ export default class Keyboard {
     h1.innerText = 'Virtual Keyboard';
 
     const desc = createDomNode('p', '', 'desc');
-    desc.innerText = 'Created in Windows. Press Ctrl+Alt to switch language.';
+    desc.innerText = 'Created in Windows. Press Shift+Alt to switch language.';
 
     this.keyboardInput = createDomNode(
       'textarea',
