@@ -3,6 +3,7 @@
 @import '../abstracts/mixins';
 
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Overpass+Mono:wght@400;700&display=swap');
 
 body {
   font-family: 'Roboto', sans-serif;
@@ -16,6 +17,7 @@ body {
 }
 
 .keyboard__input {
+  font-family: 'Overpass Mono', monospace;
   font-size: 2rem;
 }
 

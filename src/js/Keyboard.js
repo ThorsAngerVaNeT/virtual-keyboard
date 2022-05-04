@@ -154,7 +154,35 @@ export default class Keyboard {
           cursorPos += 1;
         }
 
-        if (!['Shift', 'Ctrl', 'Alt', 'CapsLock'].includes(key) && !(this.state.ctrl || this.state.alt)) { this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
+        if (!code.match(/Alt|Arrow|Caps|Control|Shift/) && !(this.state.ctrl || this.state.alt)) { this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
+        if (code.match(/Arrow/)) {
+          let newPos;
+          if (code === 'ArrowUp') {
+            const lines = this.getTextLines();
+            const { currentLineIndex, posInCurrentLine, prevLinesLength } = this.getPosInfo(lines);
+            if (currentLineIndex === 0) newPos = 0;
+            else {
+              const newPosLineLength = lines[currentLineIndex - 1].length;
+              if (newPosLineLength < posInCurrentLine) newPos = prevLinesLength - 1;
+              else newPos = prevLinesLength - newPosLineLength + posInCurrentLine;
+            }
+          }
+          if (code === 'ArrowDown') {
+            const lines = this.getTextLines();
+            const { currentLineIndex, posInCurrentLine, nextLinesLength } = this.getPosInfo(lines);
+
+            if (currentLineIndex === lines.length - 1) newPos = nextLinesLength;
+            else {
+              const newPosLineLength = lines[currentLineIndex + 1].length;
+              if (newPosLineLength < posInCurrentLine) newPos = nextLinesLength - 1;
+              else newPos = nextLinesLength - newPosLineLength + posInCurrentLine;
+            }
+          }
+          if (code === 'ArrowLeft' || code === 'ArrowRight') {
+            newPos = this.keyboardInput.selectionStart + (code === 'ArrowLeft' ? -1 : 1);
+          }
+          this.keyboardInput.setSelectionRange(newPos, newPos);
+        }
       }
 
       if (e.type === 'keyup' || e.type === 'mouseup') {
@@ -191,6 +219,51 @@ export default class Keyboard {
     });
   }
 
+  getPosInfo(lines) {
+    const currentPos = this.keyboardInput.selectionStart;
+    let currentLineIndex = 0;
+    let counter = 0;
+    while (counter <= currentPos) {
+      counter += lines[currentLineIndex].length;
+      currentLineIndex += 1;
+    }
+    currentLineIndex -= 1;
+
+    const prevLinesLength = counter - (currentLineIndex > 0
+      ? lines[currentLineIndex].length : lines[0].length);
+
+    const nextLinesLength = counter + (currentLineIndex < (lines.length - 1)
+      ? lines[currentLineIndex + 1].length : 0);
+
+    const posInCurrentLine = (currentPos > lines[0].length
+      ? currentPos - prevLinesLength : currentPos);
+
+    return {
+      currentPos, currentLineIndex, posInCurrentLine, prevLinesLength, nextLinesLength,
+    };
+  }
+
+  getTextLines() {
+    const linesByBreaker = this.keyboardInput.value.split('\n').map((line) => `${line} `);
+    const lines = linesByBreaker.map((line) => {
+      if (line.length < 102) return line;
+
+      const words = line.split(' ');
+      const splittedLines = [];
+      let gluedLine = '';
+      words.forEach((word, i) => {
+        if (gluedLine.length + word.length + 1 < 102 && i !== words.length - 1) {
+          gluedLine += `${word} `;
+        } else {
+          splittedLines.push(gluedLine);
+          gluedLine = `${word} `;
+        }
+      });
+      return splittedLines;
+    }).flat();
+    return lines;
+  }
+
   #renderKeyboard() {
     const h1 = createDomNode('h1', '', 'title');
     h1.innerText = 'Virtual Keyboard';
@@ -205,6 +278,7 @@ export default class Keyboard {
       },
       'keyboard__input',
     );
+    this.keyboardInput.value = 'Необязательный параметр.\nМестоположение внутри стр\nоки, откуда начинать поиск, \nнумерация индексов идёт сл\nева направо. Может быть любым целым числом. Значение по умолчанию установлено в str.length. Если оно отрицательно, трактуется как 0. Если fromIndex > str.length, параметр fromIndex будет трактоваться как str.length.\nОписание';
 
     const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
 
