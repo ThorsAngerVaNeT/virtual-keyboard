@@ -62,7 +62,7 @@ export default class Keyboard {
           btn = keyObj.createBtn();
           btn.onmousedown = (e) => this.#eventHandler(e, keyObj);
           btn.onmouseup = (e) => this.#eventHandler(e, keyObj);
-          btn.onmouseleave = () => this.#resetBtn(btn);
+          btn.onmouseleave = (e) => this.#eventHandler(e, keyObj);
           this.btns.push(btn);
         }
         keyObj.btn = btn;
@@ -74,7 +74,8 @@ export default class Keyboard {
   #eventHandler(e, clickedKey) {
     if (e.stopPropagation) e.stopPropagation();
 
-    const keyObj = clickedKey || this.keys[this.currentLang].find((key) => key.code === (e.code));
+    const keyObj = this.keys[this.currentLang]
+      .find((key) => key.code === (e.code || clickedKey.code));
     if (keyObj) {
       const {
         btn, code, key, shift, type,
@@ -95,7 +96,7 @@ export default class Keyboard {
         }
 
         if (code === 'ShiftRight' || code === 'ShiftLeft') {
-          this.state.shift = true;
+          this.state.shift = !this.state.shift;
           this.switchCase();
           this.switchDouble();
         }
@@ -198,8 +199,8 @@ export default class Keyboard {
         }
       }
 
-      if (e.type === 'keyup' || e.type === 'mouseup') {
-        if (e.type !== 'mouseup') {
+      if (e.type === 'keyup' || e.type === 'mouseup' || e.type === 'mouseleave') {
+        if (e.type === 'keyup') {
           if (code === 'ControlLeft' || code === 'ControlRigth') {
             this.state.ctrl = false;
           }
@@ -212,7 +213,7 @@ export default class Keyboard {
             this.switchDouble();
           }
         }
-        if (!(e.type === 'mouseup' && key.match(/Alt|Ctrl|Shift/))) {
+        if (!((e.type === 'mouseup' || e.type === 'mouseleave') && key.match(/Alt|Ctrl|Shift/))) {
           this.#resetBtn(btn);
         }
       }
