@@ -154,33 +154,47 @@ export default class Keyboard {
           cursorPos += 1;
         }
 
-        if (!code.match(/Alt|Arrow|Caps|Control|Shift/) && !(this.state.ctrl || this.state.alt)) { this.keyboardInput.setSelectionRange(cursorPos, cursorPos); }
+        if (!code.match(/Alt|Arrow|Caps|Control|Shift/) && !(this.state.ctrl || this.state.alt)) {
+          this.keyboardInput.setSelectionRange(cursorPos, cursorPos);
+          this.selectionPos = null;
+          this.updateSelectionPos(this.getPosInfo(this.getTextLines()).posInCurrentLine);
+        }
+
         if (code.match(/Arrow/)) {
           let newPos;
+          const lines = this.getTextLines();
+          const {
+            currentLineIndex, posInCurrentLine, prevLinesLength, nextLinesLength,
+          } = this.getPosInfo(lines);
+
           if (code === 'ArrowUp') {
-            const lines = this.getTextLines();
-            const { currentLineIndex, posInCurrentLine, prevLinesLength } = this.getPosInfo(lines);
-            if (currentLineIndex === 0) newPos = 0;
-            else {
+            if (currentLineIndex === 0) {
+              newPos = 0;
+              this.updateSelectionPos(newPos);
+            } else {
               const newPosLineLength = lines[currentLineIndex - 1].length;
               if (newPosLineLength < posInCurrentLine) newPos = prevLinesLength - 1;
               else newPos = prevLinesLength - newPosLineLength + posInCurrentLine;
             }
           }
-          if (code === 'ArrowDown') {
-            const lines = this.getTextLines();
-            const { currentLineIndex, posInCurrentLine, nextLinesLength } = this.getPosInfo(lines);
 
-            if (currentLineIndex === lines.length - 1) newPos = nextLinesLength;
-            else {
+          if (code === 'ArrowDown') {
+            if (currentLineIndex === lines.length - 1) {
+              newPos = nextLinesLength;
+              this.updateSelectionPos(lines[currentLineIndex].length - 1);
+            } else {
               const newPosLineLength = lines[currentLineIndex + 1].length;
               if (newPosLineLength < posInCurrentLine) newPos = nextLinesLength - 1;
               else newPos = nextLinesLength - newPosLineLength + posInCurrentLine;
             }
           }
+
           if (code === 'ArrowLeft' || code === 'ArrowRight') {
-            newPos = this.keyboardInput.selectionStart + (code === 'ArrowLeft' ? -1 : 1);
+            const posInc = code === 'ArrowLeft' ? -1 : 1;
+            newPos = this.keyboardInput.selectionStart + posInc;
+            this.updateSelectionPos(posInCurrentLine + posInc);
           }
+
           this.keyboardInput.setSelectionRange(newPos, newPos);
         }
       }
@@ -235,7 +249,7 @@ export default class Keyboard {
     const nextLinesLength = counter + (currentLineIndex < (lines.length - 1)
       ? lines[currentLineIndex + 1].length : 0);
 
-    const posInCurrentLine = (currentPos > lines[0].length
+    const posInCurrentLine = this.selectionPos || (currentPos >= lines[0].length
       ? currentPos - prevLinesLength : currentPos);
 
     return {
@@ -261,7 +275,12 @@ export default class Keyboard {
       });
       return splittedLines;
     }).flat();
+
     return lines;
+  }
+
+  updateSelectionPos(pos) {
+    this.selectionPos = pos;
   }
 
   #renderKeyboard() {
@@ -279,6 +298,11 @@ export default class Keyboard {
       'keyboard__input',
     );
     this.keyboardInput.value = 'Необязательный параметр.\nМестоположение внутри стр\nоки, откуда начинать поиск, \nнумерация индексов идёт сл\nева направо. Может быть любым целым числом. Значение по умолчанию установлено в str.length. Если оно отрицательно, трактуется как 0. Если fromIndex > str.length, параметр fromIndex будет трактоваться как str.length.\nОписание';
+
+    this.keyboardInput.onmouseup = () => {
+      this.selectionPos = null;
+      this.updateSelectionPos(this.getPosInfo(this.getTextLines()).posInCurrentLine);
+    };
 
     const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
 
