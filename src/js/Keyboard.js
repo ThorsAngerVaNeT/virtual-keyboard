@@ -70,6 +70,7 @@ export default class Keyboard {
   }
 
   #eventHandler(e, clickedKey) {
+    console.log(e);
     if (e.stopPropagation) e.stopPropagation();
 
     const keyObj = this.keys[this.currentLang]
@@ -78,9 +79,9 @@ export default class Keyboard {
       const {
         btn, code, key, shift, type,
       } = keyObj;
-      if (!(this.state.ctrl || this.state.alt)) e.preventDefault();
+      if (!(this.state.ctrl)) e.preventDefault();
       if (key.match(/Alt|Caps|Ctrl|Shift/) && e.repeat) return;
-      if (e.type === 'keydown' || e.type === 'mousedown') {
+      if (e.type === 'keydown' || e.type === 'mousedown' || (window.navigator.userAgent.match(/Macintosh/) && e.type === 'keyup' && code === 'CapsLock')) {
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
         const left = this.keyboardInput.value.slice(0, cursorPos);
