@@ -257,7 +257,7 @@ export default class Keyboard {
   getTextLines() {
     const linesByBreaker = this.keyboardInput.value.split('\n').map((line) => `${line} `);
     const lines = linesByBreaker.map((line) => {
-      if (line.length < 102) return line;
+      if (line.length <= 102) return line;
 
       const words = line.split(' ');
       const splittedLines = [];
@@ -266,8 +266,11 @@ export default class Keyboard {
         if (gluedLine.length + word.length + 1 < 102 && i !== words.length - 1) {
           gluedLine += `${word} `;
         } else {
-          splittedLines.push(gluedLine);
-          gluedLine = `${word} `;
+          if (gluedLine !== '') splittedLines.push(gluedLine);
+          if (word.length >= 102) {
+            splittedLines.push(word.slice(0, 101));
+          }
+          gluedLine = `${word.slice(101)} `;
         }
       });
       return splittedLines;
