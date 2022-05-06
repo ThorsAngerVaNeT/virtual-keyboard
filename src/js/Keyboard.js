@@ -16,11 +16,13 @@ export default class Keyboard {
 
   #checkInitParams() {
     const codes = this.rowsMap.flat();
-    if (!Array.from(this.langs)
-      .every((lang) => codes.every((code) => lang.find((key) => key.code === code)))
-    ) {
-      throw new Error("Keyboard rows map and language maps don't match!");
-    }
+    const langs = Object.entries(this.langs);
+    if (!codes.length || !langs.length) throw new Error('Rows map or languages object are empty!');
+    langs
+      .every((lang) => codes.every((code) => {
+        if (!lang[1].find((key) => key.code === code)) throw new Error(`Keyboard rows map and language maps don't match!<br/>Language: ${lang[0]}, rows map code not found: ${code}`);
+        else return true;
+      }));
   }
 
   init() {
@@ -70,7 +72,6 @@ export default class Keyboard {
   }
 
   #eventHandler(e, clickedKey) {
-    console.log(e);
     if (e.stopPropagation) e.stopPropagation();
 
     const keyObj = this.keys[this.currentLang]
