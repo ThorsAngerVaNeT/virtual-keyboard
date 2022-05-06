@@ -263,14 +263,16 @@ export default class Keyboard {
       const splittedLines = [];
       let gluedLine = '';
       words.forEach((word, i) => {
-        if (gluedLine.length + word.length + 1 < 102 && i !== words.length - 1) {
+        if (gluedLine.length + word.length + 1 <= 102 && i !== words.length - 1) {
           gluedLine += `${word} `;
         } else {
+          let tmp = word;
           if (gluedLine !== '') splittedLines.push(gluedLine);
-          if (word.length >= 102) {
-            splittedLines.push(word.slice(0, 101));
+          while (tmp.length >= 102) {
+            splittedLines.push(tmp.slice(0, 101));
+            tmp = tmp.slice(101);
           }
-          gluedLine = `${word.slice(101)} `;
+          gluedLine = `${tmp} `;
         }
       });
       return splittedLines;
