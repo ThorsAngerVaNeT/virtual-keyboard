@@ -3,6 +3,10 @@ import { rowsMap } from './js/common';
 import Keyboard from './js/Keyboard';
 
 window.onload = () => {
-  const keyboard = new Keyboard(rowsMap, langs);
-  keyboard.init();
+  try {
+    const keyboard = new Keyboard(rowsMap, langs);
+    keyboard.init();
+  } catch (error) {
+    document.body.innerHTML = error.message;
+  }
 };
