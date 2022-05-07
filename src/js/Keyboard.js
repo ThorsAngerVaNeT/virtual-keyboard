@@ -82,12 +82,7 @@ export default class Keyboard {
       } = keyObj;
       if (!(this.state.ctrl)) e.preventDefault();
       if (key.match(/Alt|Caps|Ctrl|Shift/) && e.repeat) return;
-      if (code.match(/Shift/) && e.type !== 'mouseleave') {
-        console.log(e.code, e.type);
-        console.log('shift', this.state.shift);
-        console.log('shift.left', this.state.shiftleft);
-        console.log('shift.right', this.state.shiftright);
-      }
+
       if (e.type === 'keydown' || e.type === 'mousedown' || (window.navigator.userAgent.match(/Macintosh/) && e.type === 'keyup' && code === 'CapsLock')) {
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
@@ -367,6 +362,10 @@ export default class Keyboard {
   }
 
   #resetBtn(btn) {
+    if (!this.pressed.has(btn) && btn.textContent === 'Shift') {
+      const anotherShift = this.btns.find((b) => b.textContent === 'Shift' && b !== btn);
+      this.#resetBtn(anotherShift);
+    }
     this.pressed.delete(btn);
     btn.classList.remove('active');
   }
