@@ -8,7 +8,7 @@ export default class Key {
     this.code = code;
     this.shift = shift;
     this.classPrefix = 'keyboard__key-';
-    this.classes = ['keyboard__key', ...classes.map((cl) => `${this.classPrefix}${cl}`)];
+    this.classes = ['keyboard__key', ...classes];
     this.init();
   }
 

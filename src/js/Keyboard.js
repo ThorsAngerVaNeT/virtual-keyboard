@@ -9,7 +9,7 @@ export default class Keyboard {
     this.btns = [];
     this.pressed = new Set();
     this.state = {
-      alt: false, caps: false, ctrl: false, shift: false,
+      alt: false, caps: false, ctrl: false, shift: false, arrowswitch: false,
     };
     this.#checkInitParams();
   }
@@ -82,6 +82,7 @@ export default class Keyboard {
       } = keyObj;
       if (!(this.state.ctrl)) e.preventDefault();
       if (key.match(/Alt|Caps|Ctrl|Shift/) && e.repeat) return;
+
       if (e.type === 'keydown' || e.type === 'mousedown' || (window.navigator.userAgent.match(/Macintosh/) && e.type === 'keyup' && code === 'CapsLock')) {
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
@@ -102,7 +103,7 @@ export default class Keyboard {
           this.switchDouble();
         }
 
-        if (e.type === 'mousedown' && key.match(/Alt|Ctrl|Shift/) && btn.classList.contains('active')) {
+        if (e.type === 'mousedown' && code.match(/Alt|Control|Shift|ArrowSwitch/) && btn.classList.contains('active')) {
           this.state[code.toLowerCase()] = false;
           this.state[key.toLowerCase()] = this.state[`${key.toLowerCase()}left`] || this.state[`${key.toLowerCase()}right`];
           this.switchCase();
@@ -140,6 +141,10 @@ export default class Keyboard {
                 this.state.alt = true;
                 break;
 
+              case 'ArrowSwitch':
+                this.state.arrowswitch = true;
+                break;
+
               default:
                 break;
             }
@@ -171,51 +176,58 @@ export default class Keyboard {
           this.keyboardInput.setSelectionRange(cursorPos, cursorPos);
           this.selectionPos = null;
         }
+        if (code.match(/ArrowUp|ArrowRight|ArrowDown|ArrowLeft/)) {
+          if (this.state.arrowswitch) {
+            let newPos;
+            const lines = this.getTextLines();
+            const {
+              currentLineIndex, posInCurrentLine, prevLinesLength, nextLinesLength,
+            } = this.getPosInfo(lines);
 
-        if (code.match(/Arrow/)) {
-          let newPos;
-          const lines = this.getTextLines();
-          const {
-            currentLineIndex, posInCurrentLine, prevLinesLength, nextLinesLength,
-          } = this.getPosInfo(lines);
-
-          if (code === 'ArrowUp') {
-            if (currentLineIndex === 0) {
-              newPos = 0;
-            } else {
-              const newLineLength = lines[currentLineIndex - 1].length;
-              if (newLineLength < posInCurrentLine) {
-                this.selectionPos = posInCurrentLine;
-                newPos = prevLinesLength - 1;
+            if (code === 'ArrowUp') {
+              if (currentLineIndex === 0) {
+                newPos = 0;
               } else {
-                newPos = prevLinesLength - newLineLength + (this.selectionPos || posInCurrentLine);
-                this.selectionPos = null;
+                const newLineLength = lines[currentLineIndex - 1].length;
+                if (newLineLength < posInCurrentLine) {
+                  this.selectionPos = posInCurrentLine;
+                  newPos = prevLinesLength - 1;
+                } else {
+                  const pos = (this.selectionPos || posInCurrentLine);
+                  newPos = prevLinesLength - newLineLength + pos;
+                  this.selectionPos = null;
+                }
               }
             }
-          }
 
-          if (code === 'ArrowDown') {
-            if (currentLineIndex === lines.length - 1) {
-              newPos = nextLinesLength;
-            } else {
-              const newLineLength = lines[currentLineIndex + 1].length;
-              if (newLineLength < posInCurrentLine) {
-                this.selectionPos = posInCurrentLine;
-                newPos = nextLinesLength - 1;
+            if (code === 'ArrowDown') {
+              if (currentLineIndex === lines.length - 1) {
+                newPos = nextLinesLength;
               } else {
-                newPos = nextLinesLength - newLineLength + (this.selectionPos || posInCurrentLine);
-                this.selectionPos = null;
+                const newLineLength = lines[currentLineIndex + 1].length;
+                if (newLineLength < posInCurrentLine) {
+                  this.selectionPos = posInCurrentLine;
+                  newPos = nextLinesLength - 1;
+                } else {
+                  const pos = (this.selectionPos || posInCurrentLine);
+                  newPos = nextLinesLength - newLineLength + pos;
+                  this.selectionPos = null;
+                }
               }
             }
-          }
 
-          if (code === 'ArrowLeft' || code === 'ArrowRight') {
-            const posInc = code === 'ArrowLeft' ? -1 : 1;
-            newPos = this.keyboardInput.selectionStart + posInc;
-            this.selectionPos = null;
-          }
+            if (code === 'ArrowLeft' || code === 'ArrowRight') {
+              const posInc = code === 'ArrowLeft' ? -1 : 1;
+              newPos = this.keyboardInput.selectionStart + posInc;
+              this.selectionPos = null;
+            }
 
-          this.keyboardInput.setSelectionRange(newPos, newPos);
+            this.keyboardInput.setSelectionRange(newPos, newPos);
+          } else {
+            this.keyboardInput.value = `${left}${key}${right}`;
+            cursorPos += 1;
+            this.keyboardInput.setSelectionRange(cursorPos, cursorPos);
+          }
         }
       }
 
@@ -233,7 +245,7 @@ export default class Keyboard {
             this.switchDouble();
           }
         }
-        if (!((e.type === 'mouseup' || e.type === 'mouseleave') && key.match(/Alt|Ctrl|Shift/))) {
+        if (!((e.type === 'mouseup' || e.type === 'mouseleave') && code.match(/Alt|Control|Shift|ArrowSwitch/))) {
           this.#resetBtn(btn);
         }
       }
