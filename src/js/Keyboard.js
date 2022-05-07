@@ -170,7 +170,6 @@ export default class Keyboard {
         if (!code.match(/Alt|Arrow|Caps|Control|Shift/) && !(this.state.ctrl || this.state.alt)) {
           this.keyboardInput.setSelectionRange(cursorPos, cursorPos);
           this.selectionPos = null;
-          this.updateSelectionPos(this.getPosInfo(this.getTextLines()).posInCurrentLine);
         }
 
         if (code.match(/Arrow/)) {
@@ -183,29 +182,37 @@ export default class Keyboard {
           if (code === 'ArrowUp') {
             if (currentLineIndex === 0) {
               newPos = 0;
-              this.updateSelectionPos(newPos);
             } else {
-              const newPosLineLength = lines[currentLineIndex - 1].length;
-              if (newPosLineLength < posInCurrentLine) newPos = prevLinesLength - 1;
-              else newPos = prevLinesLength - newPosLineLength + posInCurrentLine;
+              const newLineLength = lines[currentLineIndex - 1].length;
+              if (newLineLength < posInCurrentLine) {
+                this.selectionPos = posInCurrentLine;
+                newPos = prevLinesLength - 1;
+              } else {
+                newPos = prevLinesLength - newLineLength + (this.selectionPos || posInCurrentLine);
+                this.selectionPos = null;
+              }
             }
           }
 
           if (code === 'ArrowDown') {
             if (currentLineIndex === lines.length - 1) {
               newPos = nextLinesLength;
-              this.updateSelectionPos(lines[currentLineIndex].length - 1);
             } else {
-              const newPosLineLength = lines[currentLineIndex + 1].length;
-              if (newPosLineLength < posInCurrentLine) newPos = nextLinesLength - 1;
-              else newPos = nextLinesLength - newPosLineLength + posInCurrentLine;
+              const newLineLength = lines[currentLineIndex + 1].length;
+              if (newLineLength < posInCurrentLine) {
+                this.selectionPos = posInCurrentLine;
+                newPos = nextLinesLength - 1;
+              } else {
+                newPos = nextLinesLength - newLineLength + (this.selectionPos || posInCurrentLine);
+                this.selectionPos = null;
+              }
             }
           }
 
           if (code === 'ArrowLeft' || code === 'ArrowRight') {
             const posInc = code === 'ArrowLeft' ? -1 : 1;
             newPos = this.keyboardInput.selectionStart + posInc;
-            this.updateSelectionPos(posInCurrentLine + posInc);
+            this.selectionPos = null;
           }
 
           this.keyboardInput.setSelectionRange(newPos, newPos);
@@ -251,7 +258,7 @@ export default class Keyboard {
     const nextLinesLength = counter + (currentLineIndex < (lines.length - 1)
       ? lines[currentLineIndex + 1].length : 0);
 
-    const posInCurrentLine = this.selectionPos || (currentPos >= lines[0].length
+    const posInCurrentLine = (currentPos > lines[0].length
       ? currentPos - prevLinesLength : currentPos);
 
     return {
@@ -286,10 +293,6 @@ export default class Keyboard {
     return lines;
   }
 
-  updateSelectionPos(pos) {
-    this.selectionPos = pos;
-  }
-
   #renderKeyboard() {
     const h1 = createDomNode('h1', '', 'title');
     h1.innerText = 'Virtual Keyboard';
@@ -304,11 +307,6 @@ export default class Keyboard {
       },
       'keyboard__input',
     );
-
-    this.keyboardInput.onmouseup = () => {
-      this.selectionPos = null;
-      this.updateSelectionPos(this.getPosInfo(this.getTextLines()).posInCurrentLine);
-    };
 
     const keyboardWrapper = createDomNode('div', '', 'keyboard__wrapper');
 
