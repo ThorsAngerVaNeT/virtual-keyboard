@@ -277,6 +277,11 @@ export default [
     classes: ['keyboard__key-blue'],
   },
   {
+    code: 'Delete',
+    key: 'Del',
+    shift: null,
+  },
+  {
     code: 'ArrowSwitch',
     key: 'compare_arrows',
     shift: null,

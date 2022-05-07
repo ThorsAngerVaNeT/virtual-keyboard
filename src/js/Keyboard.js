@@ -131,6 +131,15 @@ export default class Keyboard {
                 }
                 break;
 
+              case 'Delete':
+                if (cursorPos === cursorPosEnd) {
+                  this.keyboardInput.value = `${left}${right.slice(1)}`;
+                  // cursorPos -= 1;
+                } else {
+                  this.keyboardInput.value = `${left}${right}`;
+                }
+                break;
+
               case 'ControlLeft':
               case 'ControlRigth':
                 this.state.ctrl = true;
