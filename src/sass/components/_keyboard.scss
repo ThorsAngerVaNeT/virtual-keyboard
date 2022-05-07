@@ -77,7 +77,6 @@
 }
 
 .keyboard__key-fn {
-  flex-grow: 1;
   background: $color-gray-dark;
 
   &:after {
@@ -91,11 +90,17 @@
 }
 
 .keyboard__key-fn:first-of-type {
+  flex-grow: 2;
   text-align: left;
 }
 
-.keyboard__key-fn:last-of-type:not(.keyboard__key-arrow),
+.keyboard__key-fn:last-of-type:not(.keyboard__key-arrow, .keyboard__key-blue) {
+  flex-grow: 2;
+  text-align: right;
+}
+
 .keyboard__key-blue:last-of-type {
+  flex-grow: 4;
   text-align: right;
 }
 
@@ -166,7 +171,6 @@
 
 .keyboard__key-toggle {
   position: relative;
-  flex-grow: 30;
 }
 
 .keyboard__key-toggle .toggler {
