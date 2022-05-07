@@ -253,7 +253,7 @@ export default [
     code: 'CapsLock',
     key: 'CapsLock',
     shift: null,
-    classes: ['toggle'],
+    classes: ['keyboard__key-toggle'],
   },
   {
     code: 'ContextMenu',
@@ -274,12 +274,13 @@ export default [
     code: 'Enter',
     key: 'Enter',
     shift: null,
-    classes: ['blue'],
+    classes: ['keyboard__key-blue'],
   },
   {
-    code: 'MetaLeft',
-    key: 'Meta',
+    code: 'ArrowSwitch',
+    key: 'compare_arrows',
     shift: null,
+    classes: ['material-icons-outlined'],
   },
   {
     code: 'ShiftLeft',
@@ -295,7 +296,7 @@ export default [
     code: 'Space',
     key: ' ',
     shift: ' ',
-    classes: ['blue'],
+    classes: ['keyboard__key-blue'],
   },
   {
     code: 'Tab',
@@ -303,21 +304,21 @@ export default [
     shift: null,
   },
   {
-    code: 'ArrowLeft', key: '←', shift: null, classes: ['arrow'],
+    code: 'ArrowLeft', key: '←', shift: null, classes: ['keyboard__key-arrow'],
   },
   {
     code: 'ArrowUp',
     key: '↑',
     shift: null,
-    classes: ['half', 'arrow'],
+    classes: ['keyboard__key-half', 'keyboard__key-arrow'],
   },
   {
     code: 'ArrowDown',
     key: '↓',
     shift: null,
-    classes: ['half', 'arrow'],
+    classes: ['keyboard__key-half', 'keyboard__key-arrow'],
   },
   {
-    code: 'ArrowRight', key: '→', shift: null, classes: ['arrow'],
+    code: 'ArrowRight', key: '→', shift: null, classes: ['keyboard__key-arrow'],
   },
 ];
