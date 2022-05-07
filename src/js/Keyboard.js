@@ -96,13 +96,17 @@ export default class Keyboard {
         }
 
         if (code === 'ShiftRight' || code === 'ShiftLeft') {
-          this.state.shift = !this.state.shift;
+          this.state[code.toLowerCase()] = true;
+          this.state.shift = this.state[`${key.toLowerCase()}left`] || this.state[`${key.toLowerCase()}right`];
           this.switchCase();
           this.switchDouble();
         }
 
         if (e.type === 'mousedown' && key.match(/Alt|Ctrl|Shift/) && btn.classList.contains('active')) {
-          this.state[key.toLowerCase()] = false;
+          this.state[code.toLowerCase()] = false;
+          this.state[key.toLowerCase()] = this.state[`${key.toLowerCase()}left`] || this.state[`${key.toLowerCase()}right`];
+          this.switchCase();
+          this.switchDouble();
           this.#resetBtn(btn);
         } else {
           if (type === 'fn') {
@@ -143,6 +147,7 @@ export default class Keyboard {
           this.pressed.add(btn);
           btn.classList.add('active');
         }
+
         if ((this.state.shift && key === 'Alt') || (this.state.alt && key === 'Shift')) {
           this.switchLanguage();
           if (e.type === 'mousedown') {
