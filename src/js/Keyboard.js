@@ -24,7 +24,7 @@ export default class Keyboard {
   }
 
   #checkInitParams() {
-    const codes = this.rowsMap.flat();
+    const codes = this.rowsMap.flat().filter((b) => b !== 'Lang');
     const langs = Object.entries(this.langs);
     if (!codes.length || !langs.length) throw new Error('Rows map or languages object are empty!');
     langs
@@ -158,6 +158,10 @@ export default class Keyboard {
 
               case 'ArrowSwitch':
                 this.state.arrowswitch = true;
+                break;
+
+              case 'LangSwitch':
+                this.switchLanguage();
                 break;
 
               default:
@@ -427,6 +431,7 @@ Please keep in mind
     const currentLangIndex = langs.indexOf(this.currentLang);
     const nextLangIndex = (currentLangIndex + 1) % langs.length;
     this.currentLang = langs[nextLangIndex];
+    this.btns.find((b) => b.code === 'LangSwitch').children[0].innerText = this.currentLang.toUpperCase();
     window.localStorage.setItem('vk-lang', this.currentLang);
     this.switchCase();
     this.switchDouble();

@@ -94,7 +94,7 @@
   text-align: left;
 }
 
-.keyboard__key-fn:last-of-type:not(.keyboard__key-arrow, .keyboard__key-blue) {
+.keyboard__key-fn:last-of-type:not(.keyboard__key-arrow, .keyboard__key-blue, .keyboard__key-lang) {
   flex-grow: 2;
   text-align: right;
 }
@@ -201,4 +201,8 @@
   100% {
     background-position: 0 0;
   }
+}
+
+.keyboard__key-lang {
+  flex-grow: 1;
 }

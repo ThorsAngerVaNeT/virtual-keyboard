@@ -326,4 +326,7 @@ export default [
   {
     code: 'ArrowRight', key: '→', shift: null, classes: ['keyboard__key-arrow'],
   },
+  {
+    code: 'LangSwitch', key: 'EN', shift: null, classes: ['keyboard__key-lang'],
+  },
 ];

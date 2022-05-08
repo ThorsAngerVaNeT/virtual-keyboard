@@ -21,8 +21,8 @@ export default [
   },
   {
     code: 'BracketRight',
-    key: 'ъ',
-    shift: '',
+    key: '\'',
+    shift: '\'',
   },
   {
     code: 'Comma',
@@ -91,7 +91,7 @@ export default [
   },
   {
     code: 'KeyB',
-    key: 'и',
+    key: 'і',
     shift: '',
   },
   {
@@ -156,7 +156,7 @@ export default [
   },
   {
     code: 'KeyO',
-    key: 'щ',
+    key: 'ў',
     shift: '',
   },
   {
@@ -327,6 +327,6 @@ export default [
     code: 'ArrowRight', key: '→', shift: null, classes: ['keyboard__key-arrow'],
   },
   {
-    code: 'LangSwitch', key: 'RU', shift: null, classes: ['keyboard__key-lang'],
+    code: 'LangSwitch', key: 'BY', shift: null, classes: ['keyboard__key-lang'],
   },
 ];
