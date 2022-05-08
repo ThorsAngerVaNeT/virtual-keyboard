@@ -9,9 +9,18 @@ export default class Keyboard {
     this.btns = [];
     this.pressed = new Set();
     this.state = {
-      alt: false, caps: false, ctrl: false, shift: false, arrowswitch: false,
+      caps: false, arrowswitch: false,
     };
+    this.#setACSState(false);
     this.#checkInitParams();
+  }
+
+  #setACSState(value) {
+    ['alt', 'ctrl', 'shift'].forEach((b) => {
+      this.state[b] = value;
+      this.state[`${b}left`] = value;
+      this.state[`${b}right`] = value;
+    });
   }
 
   #checkInitParams() {
@@ -45,9 +54,7 @@ export default class Keyboard {
 
     window.onblur = () => {
       this.#resetAllBtns();
-      this.state = {
-        ...this.state, alt: false, ctrl: false, shift: false,
-      };
+      this.#setACSState(false);
       this.switchCase();
       this.switchDouble();
     };
@@ -167,7 +174,9 @@ export default class Keyboard {
             this.state.shift = false;
             this.state.alt = false;
             this.switchCase();
-            this.btns.filter((b) => b.textContent === 'Shift' || b.textContent === 'Alt').forEach((b) => this.#resetBtn(b));
+            this.btns.filter((b) => b.code.startsWith('Shift') || b.code.startsWith('Alt')).forEach((b) => {
+              this.#resetBtn(b);
+            });
           }
         }
 
@@ -365,14 +374,14 @@ export default class Keyboard {
 
   #resetAllBtns() {
     [...this.pressed].forEach((btn) => {
-      this.#resetBtn(btn);
+      if (btn.code !== 'ArrowSwitch') this.#resetBtn(btn);
     });
   }
 
   #resetBtn(btn) {
-    if (!this.pressed.has(btn) && btn.textContent === 'Shift') {
-      const anotherShift = this.btns.find((b) => b.textContent === 'Shift' && b !== btn);
-      this.#resetBtn(anotherShift);
+    if (!this.pressed.has(btn) && btn.code.match(/Shift/)) {
+      const anotherShift = this.btns.find((b) => b.code.match(/Shift/) && b !== btn);
+      if (this.pressed.has(anotherShift)) { this.#resetBtn(anotherShift); }
     }
     this.pressed.delete(btn);
     btn.classList.remove('active');
