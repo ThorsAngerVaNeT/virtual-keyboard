@@ -328,7 +328,11 @@ export default class Keyboard {
     h1.innerText = 'Virtual Keyboard';
 
     const desc = createDomNode('p', '', 'desc');
-    desc.innerText = 'Created in Windows. Press Shift+Alt to switch language.';
+    desc.innerText = 'Created in Windows. Press Shift+Alt to switch language.\n';
+    const icon = createDomNode('span', '', 'material-icons-outlined');
+    icon.innerText = 'compare_arrows';
+    desc.append(icon);
+    desc.innerHTML += ' - click to switch arrow keys behavior';
 
     this.keyboardInput = createDomNode(
       'textarea',
