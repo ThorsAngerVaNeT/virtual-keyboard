@@ -41,8 +41,9 @@ npm run build
 ```
 
 ## Please keep in mind
-  1) If you run ESLint check in my repo at your computer and `Expected linebreaks to be LF but found CRLF linebreak-style` errors appear, it's your git have wrong `autocrlf` setting and it's your git replaces all LF in my sources to CRLF.
-  2) Right Alt (AltGraph) simultaneously triggers events for right Alt and left Ctrl when your system keyboard layout is RU. It's normal behavior.
+  1) If you run ESLint check in my repo at your computer and "Expected linebreaks to be LF but found CRLF linebreak-style" errors appear, it's your git have wrong 'autocrlf' setting and it's your git replaces all LF in my sources to CRLF.
+  2) "Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'interest-cohort'." warning in console is normal behavior at GitHub Pages. This warning about Chrome settings and not connected with my app and code.
+  3) Right Alt (AltGraph) simultaneously triggers events for right Alt and left Ctrl when your system keyboard layout is RU. It's normal behavior.
 
 ## Additional features
   1) Arrow behavior switcher:
