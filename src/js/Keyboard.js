@@ -298,21 +298,22 @@ export default class Keyboard {
 
   getTextLines() {
     const linesByBreaker = this.keyboardInput.value.split('\n').map((line) => `${line} `);
+    const cols = this.keyboardInput.cols + 2;
     const lines = linesByBreaker.map((line) => {
-      if (line.length <= 102) return line;
+      if (line.length <= cols) return line;
 
       const words = line.split(' ');
       const splittedLines = [];
       let gluedLine = '';
       words.forEach((word, i) => {
-        if (gluedLine.length + word.length + 1 <= 102 && i !== words.length - 1) {
+        if (gluedLine.length + word.length + 1 <= cols && i !== words.length - 1) {
           gluedLine += `${word} `;
         } else {
           let tmp = word;
           if (gluedLine !== '') splittedLines.push(gluedLine);
-          while (tmp.length >= 102) {
-            splittedLines.push(tmp.slice(0, 101));
-            tmp = tmp.slice(101);
+          while (tmp.length >= cols) {
+            splittedLines.push(tmp.slice(0, cols - 1));
+            tmp = tmp.slice(cols - 1);
           }
           gluedLine = `${tmp} `;
         }
@@ -337,7 +338,20 @@ export default class Keyboard {
     this.keyboardInput = createDomNode(
       'textarea',
       {
-        rows: 15, cols: 100, placeholder: 'Click Here to activate keyboard!', spellcheck: false,
+        rows: 16,
+        cols: 80,
+        placeholder: `Additional features
+  1) Arrow behavior switcher:
+    - arrow keys insert arrow symbols by default;
+    - arrow keys navigate caret when the arrow switcher is enabled (yes, it's not perfect, but works well in normal test cases).
+  2) Alt, Ctrl, Shift can be toggled and save toggle state by mouse click. Another click turns off toggle state. This behavior make possible to switch language, type shifted symbols only by mouse.
+  3) Toggled/pressed keys losing those states when the window loses focus (Alt+Tab).
+  4) macOS Caps Lock behavior is handled.
+  
+Please keep in mind
+  1) If you run ESLint check in my repo at your computer and "Expected linebreaks to be LF but found CRLF linebreak-style" errors appear, it's your git have wrong 'autocrlf' setting and it's your git replaces all LF in my sources to CRLF.
+  2) Right Alt (AltGraph) simultaneously triggers events for right Alt and left Ctrl when your system keyboard layout is RU. It's normal behavior.`,
+        spellcheck: false,
       },
       'keyboard__input',
     );
