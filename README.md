@@ -51,3 +51,5 @@ npm run build
   2) Alt, Ctrl, Shift can be toggled and save toggle state by mouse click. Another click turns off toggle state. This behavior make possible to switch language, type shifted symbols only by mouse.
   3) Toggled/pressed keys losing those states when the window loses focus (Alt+Tab).
   4) macOS Caps Lock behavior is handled.
+  5) Multiple language support. EN, RU, BY languages are provided. You can copy language file, update it, import in `src/lang/index.js` and everything will work the same way.
+  6) Language switch button was added to display current language, it also switch language at mouse click.
