@@ -41,13 +41,13 @@ npm run build
 ```
 
 ## Please keep in mind
-  1) that If you run ESLint check in my repo at your computer and `Expected linebreaks to be LF but found CRLF linebreak-style` errors appear, it's your git have wrong `autocrlf` setting and it's your git replaces all LF in my sources to CRLF.
-  2) Right Alt (AltGraph) simultaneously triggers events for right Alt and left Ctrl when your system keyboard layout is  RU. It's normal behavior.
+  1) If you run ESLint check in my repo at your computer and `Expected linebreaks to be LF but found CRLF linebreak-style` errors appear, it's your git have wrong `autocrlf` setting and it's your git replaces all LF in my sources to CRLF.
+  2) Right Alt (AltGraph) simultaneously triggers events for right Alt and left Ctrl when your system keyboard layout is RU. It's normal behavior.
 
 ## Additional features
   1) Arrow behavior switcher:
     - arrow keys insert arrow symbols by default;
-    - arrow keys navigate caret when arrow switcher enabled (yes, it's not perfect, but works well in normal test cases).
-  2) Alt, Ctrl, Shift can be toggled and save toggled state by clicking mouse. Another click turn off toggled state. This behavior make possible to switch language, type shifted symbols only by mouse.
-  3) Toggled/pressed keys loosing those states when window loosing focus (Alt+Tab).
-  4) macOS Caps Lock handling.
+    - arrow keys navigate caret when the arrow switcher is enabled (yes, it's not perfect, but works well in normal test cases).
+  2) Alt, Ctrl, Shift can be toggled and save toggle state by mouse click. Another click turns off toggle state. This behavior make possible to switch language, type shifted symbols only by mouse.
+  3) Toggled/pressed keys losing those states when the window loses focus (Alt+Tab).
+  4) macOS Caps Lock behavior is handled.
