@@ -17,10 +17,15 @@ export default class Keyboard {
 
   #setACSState(value) {
     ['alt', 'ctrl', 'shift'].forEach((b) => {
-      this.state[b] = value;
-      this.state[`${b}left`] = value;
-      this.state[`${b}right`] = value;
+      this.#setState(b, value);
     });
+  }
+
+  #setState(key, value) {
+    console.log('key, value: ', key, value);
+    this.state[key] = value;
+    this.state[`${key}left`] = value;
+    this.state[`${key}right`] = value;
   }
 
   #checkInitParams() {
@@ -89,7 +94,7 @@ export default class Keyboard {
       } = keyObj;
       if (!(this.state.ctrl)) e.preventDefault();
       if (key.match(/Alt|Caps|Ctrl|Shift/) && e.repeat) return;
-
+      console.log(e.code, e.type);
       if (e.type === 'keydown' || e.type === 'mousedown' || (window.navigator.userAgent.match(/Macintosh/) && e.type === 'keyup' && code === 'CapsLock')) {
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
@@ -106,6 +111,7 @@ export default class Keyboard {
         if (code === 'ShiftRight' || code === 'ShiftLeft') {
           this.state[code.toLowerCase()] = true;
           this.state.shift = this.state[`${key.toLowerCase()}left`] || this.state[`${key.toLowerCase()}right`];
+          console.log(this.state.shift);
           this.switchCase();
           this.switchDouble();
         }
@@ -113,9 +119,9 @@ export default class Keyboard {
         if (e.type === 'mousedown' && code.match(/Alt|Control|Shift|ArrowSwitch/) && btn.classList.contains('active')) {
           this.state[code.toLowerCase()] = false;
           this.state[key.toLowerCase()] = this.state[`${key.toLowerCase()}left`] || this.state[`${key.toLowerCase()}right`];
+          this.#resetBtn(btn);
           this.switchCase();
           this.switchDouble();
-          this.#resetBtn(btn);
         } else {
           if (type === 'fn') {
             switch (code) {
@@ -406,7 +412,12 @@ Please keep in mind
   #resetBtn(btn) {
     if (!this.pressed.has(btn) && btn.code.match(/Shift/)) {
       const anotherShift = this.btns.find((b) => b.code.match(/Shift/) && b !== btn);
-      if (this.pressed.has(anotherShift)) { this.#resetBtn(anotherShift); }
+      if (this.pressed.has(anotherShift)) {
+        this.#setState('shift', false);
+        this.#resetBtn(anotherShift);
+        this.switchCase();
+        this.switchDouble();
+      }
     }
     this.pressed.delete(btn);
     btn.classList.remove('active');
@@ -414,6 +425,8 @@ Please keep in mind
 
   switchCase() {
     const keys = this.keys[this.currentLang].filter((key) => key.type === 'key');
+    console.log('this.state.shift: ', this.state.shift);
+    console.log('this.state.caps: ', this.state.caps);
     keys.forEach((key, i) => {
       keys[i].btn.children[0].innerText = key[this.state.shift !== this.state.caps ? 'shift' : 'key'];
       keys[i].btn.children[1].innerText = '';
