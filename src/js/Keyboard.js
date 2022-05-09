@@ -174,6 +174,10 @@ export default class Keyboard {
           }
           this.pressed.add(btn);
           btn.classList.add('active');
+
+          if (!this.state.caps && window.navigator.userAgent.match(/Macintosh/) && code === 'CapsLock') {
+            btn.classList.remove('active');
+          }
         }
 
         if ((this.state.shift && key === 'Alt') || (this.state.alt && key === 'Shift')) {
