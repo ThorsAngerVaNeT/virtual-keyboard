@@ -22,7 +22,6 @@ export default class Keyboard {
   }
 
   #setState(key, value) {
-    console.log('key, value: ', key, value);
     this.state[key] = value;
     this.state[`${key}left`] = value;
     this.state[`${key}right`] = value;
@@ -94,7 +93,7 @@ export default class Keyboard {
       } = keyObj;
       if (!(this.state.ctrl)) e.preventDefault();
       if (key.match(/Alt|Caps|Ctrl|Shift/) && e.repeat) return;
-      console.log(e.code, e.type);
+
       if (e.type === 'keydown' || e.type === 'mousedown' || (window.navigator.userAgent.match(/Macintosh/) && e.type === 'keyup' && code === 'CapsLock')) {
         let cursorPos = this.keyboardInput.selectionStart;
         const cursorPosEnd = this.keyboardInput.selectionEnd;
@@ -111,7 +110,6 @@ export default class Keyboard {
         if (code === 'ShiftRight' || code === 'ShiftLeft') {
           this.state[code.toLowerCase()] = true;
           this.state.shift = this.state[`${key.toLowerCase()}left`] || this.state[`${key.toLowerCase()}right`];
-          console.log(this.state.shift);
           this.switchCase();
           this.switchDouble();
         }
@@ -425,8 +423,6 @@ Please keep in mind
 
   switchCase() {
     const keys = this.keys[this.currentLang].filter((key) => key.type === 'key');
-    console.log('this.state.shift: ', this.state.shift);
-    console.log('this.state.caps: ', this.state.caps);
     keys.forEach((key, i) => {
       keys[i].btn.children[0].innerText = key[this.state.shift !== this.state.caps ? 'shift' : 'key'];
       keys[i].btn.children[1].innerText = '';
