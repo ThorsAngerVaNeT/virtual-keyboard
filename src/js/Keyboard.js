@@ -218,11 +218,11 @@ export default class Keyboard {
                 newPos = 0;
               } else {
                 const newLineLength = lines[currentLineIndex - 1].length;
-                if (newLineLength < posInCurrentLine) {
-                  this.selectionPos = posInCurrentLine;
+                const pos = (this.selectionPos || posInCurrentLine);
+                if (newLineLength < pos) {
+                  this.selectionPos = pos;
                   newPos = prevLinesLength - 1;
                 } else {
-                  const pos = (this.selectionPos || posInCurrentLine);
                   newPos = prevLinesLength - newLineLength + pos;
                   this.selectionPos = null;
                 }
@@ -234,11 +234,11 @@ export default class Keyboard {
                 newPos = nextLinesLength;
               } else {
                 const newLineLength = lines[currentLineIndex + 1].length;
-                if (newLineLength < posInCurrentLine) {
-                  this.selectionPos = posInCurrentLine;
+                const pos = (this.selectionPos || posInCurrentLine);
+                if (newLineLength < pos) {
+                  this.selectionPos = pos;
                   newPos = nextLinesLength - 1;
                 } else {
-                  const pos = (this.selectionPos || posInCurrentLine);
                   newPos = nextLinesLength - newLineLength + pos;
                   this.selectionPos = null;
                 }
@@ -300,7 +300,7 @@ export default class Keyboard {
     const nextLinesLength = counter + (currentLineIndex < (lines.length - 1)
       ? lines[currentLineIndex + 1].length : 0);
 
-    const posInCurrentLine = (currentPos > lines[0].length
+    const posInCurrentLine = (currentPos >= lines[0].length
       ? currentPos - prevLinesLength : currentPos);
 
     return {
