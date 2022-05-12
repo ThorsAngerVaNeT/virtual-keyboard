@@ -323,8 +323,8 @@ export default class Keyboard {
         } else {
           let tmp = word;
           if (gluedLine !== '') splittedLines.push(gluedLine);
-          while (tmp.length >= cols) {
-            splittedLines.push(tmp.slice(0, cols - 1));
+          while (tmp.length > cols) {
+            splittedLines.push(`${tmp.slice(0, cols - 1)} `);
             tmp = tmp.slice(cols - 1);
           }
           gluedLine = `${tmp} `;
